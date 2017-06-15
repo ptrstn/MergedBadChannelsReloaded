@@ -1,0 +1,105 @@
+.jumbotron{
+	padding: 10px;
+}
+
+.jumbotron .container{
+	width: 97.5%;
+}
+
+.module-selection label{
+	min-height: initial !important;
+	padding-left: initial !important;
+}
+
+.module-selection label{
+	display: block;
+}
+
+.panel-group{
+	margin-bottom: 0;
+}
+
+.panel-heading-group{
+	padding-left: 15px;
+}
+
+.col-md-3:first-of-type{
+	padding-left: 15px;
+}
+
+.col-md-3:last-of-type{
+	padding-right: 15px;
+}
+
+.col-md-3{
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.form-inline{
+	text-align: center;
+	margin-bottom: 20px;
+}
+
+.form-group{
+	width: 45%;
+}
+
+#slider{
+	margin-bottom: 60px;
+}
+
+.panel-footer{
+	padding: 0;
+}
+
+.panel-footer #collapse-children{
+	/*background-color: #3FB8AF;*/
+	background-image: linear-gradient(to bottom,#3FB8AF 0,#2E8F87 100%);
+	border: none;
+}
+
+.noUi-pips-horizontal{
+	height: initial;
+}
+
+#plotContainer{
+	width: 95%;
+}
+
+.module-selection, .option-selection{
+	box-shadow: 3px 3px 5px #AAAAAA;
+}
+
+.module-selection .col-md-3 .panel-body{
+	min-height: 250px;
+}
+
+.option-selection label{
+	margin-right: 15px;
+}
+
+.option-selection #optionSelectionSubPart{
+	text-align: center;
+}
+
+#plotImages{
+	margin-top: 10px;
+/*	transition: box-shadow 2s;
+	-webkit-transition: all 2s;
+	-moz-transition: box-shadow 2s;
+	-o-transition: box-shadow 2s;*/
+}
+
+#plotImages:hover{
+	box-shadow: 3px 3px 5px #CE4C11;
+	/*width: 50%;*/
+}
+
+#plotContainer{
+	width: 75%;
+	margin-left: auto;
+	margin-right:auto;
+	text-align: center;
+	border-style: hidden;
+}

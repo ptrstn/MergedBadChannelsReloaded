@@ -54,12 +54,12 @@ $STRIPS = 1 << 0;
 function getDataFromFile($filename, $currentDictionary, $modulesToMonitor, $options)
 {
 	$handle = fopen($filename, "r");
-	$i = 0;
-
-	$runNumber = intval(substr($filename, -10, 6));
-	// echo $runNumber."\n\n";
 
 	if ($handle) {
+		$i = 0;
+
+		$runNumber = intval(substr($filename, -10, 6));
+		// echo $runNumber."\n\n".$options."\n";
 	    while (($line = fgets($handle)) !== false && $i < 39) 
 	    {
 	    	if (substr($line, 0, 1) === "T")
@@ -98,51 +98,50 @@ function getDataFromFile($filename, $currentDictionary, $modulesToMonitor, $opti
 
 	    fclose($handle);
 	} else {
-	    echo "WTF";
+	    echo "The file: ".$filename." does not exist!";
 	} 
 	return $currentDictionary;
 }
 
-$filename = "/data/users/event_display/Data2017/Beam/296/296168/StreamExpress/MergedBadComponents_run296168.txt";
-
-$filename2 = "/data/users//event_display/Data2017/Beam/296/296172/StreamExpress/MergedBadComponents_run296172.txt";
-
-$outDic = getDataFromFile($filename, NULL, $STRIPS, $TRACKER + $TEC7M);
-$outDic = getDataFromFile($filename2, $outDic, $STRIPS, $TRACKER + $TEC7M);
-
-// var_dump($outDic);
-
-// echo PHP_INT_SIZE."\n";
-// echo PHP_INT_MAX
-
-$BASEPATH = "/data/users/event_display/";
-
-function traverseDirectories($runStart, $runStop)
+function traverseDirectories($runStart, $runStop, $modulesToMonitor, $options)
 {
+	$dataDic = NULL;
+	$BASEPATH = "/data/users/event_display/";
+
 	for($run = $runStart; $run <= $runStop; $run++)
 	{
 		$runHigh = intval($run / 1000);
 
 		for ($year = 2016; $year <= 2017; $year++)
 		{
-			$currPath = $BASEPATH."DATA".$year."/Beam/".$runHigh."/".$run."/StreamExpress/";
+			$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$run."/StreamExpress/MergedBadComponents_run".$run.".txt";
+			
 			if (file_exists($currPath))
 			{
-				echo "T\n";
+				// echo $currPath."\n";
+
+				$dataDic = getDataFromFile($currPath, $dataDic, $modulesToMonitor, $options);
+
 				break;
 			}
 
-			$currPath = $BASEPATH."DATA".$year."/Beam/".$runHigh."/".$run."/StreamExpress/";
+			$currPath = $BASEPATH."Data".$year."/Cosmics/".$runHigh."/".$run."/StreamExpressCosmics/MergedBadComponents_run".$run.".txt";
+			
 			if (file_exists($currPath))
 			{
-				echo "T\n";
+				// echo $currPath."\n";
+
+				$dataDic = getDataFromFile($currPath, $dataDic, $modulesToMonitor, $options);
+
 				break;
 			}
 		}
 	}
-
+	return $dataDic;
 }
 
-traverseDirectories(295643, 300000);
+$dataDic = traverseDirectories(295643, 295660, $STRIPS, $TRACKER + $TEC3M + $TOB);
+
+var_dump($dataDic);
 
 ?>

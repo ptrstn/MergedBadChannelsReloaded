@@ -3,6 +3,8 @@
 <head>
 </head>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
 <!-- Optional theme -->
@@ -15,14 +17,203 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.min.js" integrity="sha256-SiHXR50l06UwJvHhFY4e5vzwq75vEHH+8fFNpkXePr0=" crossorigin="anonymous"></script>
 
 <script src="javascript/hammerjs/hammer.min.js"></script>
-<script src="chartjs-plugin-zoom/chartjs-plugin-zoom.min.js"></script>
+<script src="javascript/chartjs-plugin-zoom/chartjs-plugin-zoom.min.js"></script>
+
+<link href="css/nouislider/nouislider.min.css" rel="stylesheet">
+<script src="javascript/nouislider/nouislider.min.js"></script>
+
+<link href="css/custom.css" rel="stylesheet">
+<script src="javascript/loading.js"></script>
 
 <title>
 	Tracker Maps Reloaded Tool
 </title>
 
 <body>
-Welcome!
+
+
+<div class="panel-group">
+	<div class="jumbotron">
+		<div class="container">
+
+			<div class="row">
+				<div class="col-md-8">
+
+					<div class="panel-group module-selection">
+					  	<div class="panel panel-default">
+						    <div class="panel-heading">
+						    	<div class="panel-heading-group">
+						      		<div class="checkbox panel-title">
+			  							<label><input type="checkbox" id="module38"></label>
+							  		</div>
+								    <h4 class="panel-title">
+								    	<a data-toggle="collapse" href="#trackerTab">Tracker</a>
+								    </h4>
+						      	</div>
+						    </div>
+						    <div id="trackerTab" class="panel-collapse collapse in">
+						      	<div class="row">
+							      	<div class="col-md-3">
+										<div class="panel-group">
+										  	<div class="panel panel-default">
+										    	<div class="panel-heading">
+										    		<div class="panel-heading-group">
+														<div class="checkbox panel-title">
+															<label><input type="checkbox" id="module37"></label>
+														</div>
+											      		<h4 class="panel-title">
+											        		<a data-toggle="collapse" href="#tibTab">TIB</a>
+											      		</h4>
+										      		</div>
+										    	</div>
+										    	<div id="tibTab" class="panel-collapse collapse">
+										      		<div class="panel-body">
+										      			<label><input type="checkbox" id="module33"> TIB Layer 1</label>
+										      			<label><input type="checkbox" id="module32"> TIB Layer 2</label>
+										      			<label><input type="checkbox" id="module31"> TIB Layer 3</label>
+										      			<label><input type="checkbox" id="module30"> TIB Layer 4</label>
+										      		</div>
+										    	</div>
+										  	</div>
+										</div> 			      	
+							      	</div>
+							      	<div class="col-md-3">
+							      		<div class="panel-group">
+										    <div class="panel panel-default">
+											    <div class="panel-heading">
+											    	<div class="panel-heading-group">
+														<div class="checkbox panel-title">
+															<label><input type="checkbox" id="module36"></label>
+														</div>						    
+												        <h4 class="panel-title">
+												        	<a data-toggle="collapse" href="#tidTab">TID</a>
+												        </h4>
+											        </div>
+											    </div>
+											    <div id="tidTab" class="panel-collapse collapse">
+											        <div class="panel-body">
+												      	<label><input type="checkbox" id="module29"> TID+ Disk 1</label>
+												      	<label><input type="checkbox" id="module28"> TID+ Disk 2</label>
+												      	<label><input type="checkbox" id="module27"> TID+ Disk 3</label>
+												      	<hr/>
+												      	<label><input type="checkbox" id="module26"> TID- Disk 1</label>
+												      	<label><input type="checkbox" id="module25"> TID- Disk 2</label>
+												      	<label><input type="checkbox" id="module24"> TID- Disk 3</label>
+											        </div>
+											    </div>
+										    </div>
+										</div>
+							      	</div>
+							      	<div class="col-md-3">
+							      		<div class="panel-group">
+										    <div class="panel panel-default">
+											    <div class="panel-heading">
+											    	<div class="panel-heading-group">
+														<div class="checkbox panel-title">
+															<label><input type="checkbox" id="module35"></label>
+														</div>						    
+												        <h4 class="panel-title">
+												        	<a data-toggle="collapse" href="#tobTab">TOB</a>
+												        </h4>
+											        </div>
+											    </div>
+											    <div id="tobTab" class="panel-collapse collapse">
+											        <div class="panel-body">
+											        	<label><input type="checkbox" id="module23"> TOB Layer 1</label>
+											        	<label><input type="checkbox" id="module22"> TOB Layer 2</label>
+											        	<label><input type="checkbox" id="module21"> TOB Layer 3</label>
+											        	<label><input type="checkbox" id="module20"> TOB Layer 4</label>
+											        	<label><input type="checkbox" id="module19"> TOB Layer 5</label>
+											        	<label><input type="checkbox" id="module18"> TOB Layer 6</label>
+											        </div>
+											    </div>
+										    </div>
+										</div>
+							      	</div>
+							      	<div class="col-md-3">
+							      		<div class="panel-group">
+										    <div class="panel panel-default">
+											    <div class="panel-heading">
+											    	<div class="panel-heading-group">
+														<div class="checkbox panel-title">
+															<label><input type="checkbox" id="module34"></label>
+														</div>						    
+												        <h4 class="panel-title">
+												        	<a data-toggle="collapse" href="#tecTab">TEC</a>
+												        </h4>
+											        </div>
+											    </div>
+											    <div id="tecTab" class="panel-collapse collapse">
+											      	<div class="panel-body">
+											      		<label><input type="checkbox" id="module17"> TEC+ DISK 1</label>
+											      		<label><input type="checkbox" id="module16"> TEC+ DISK 2</label>
+											      		<label><input type="checkbox" id="module15"> TEC+ DISK 3</label>
+											      		<label><input type="checkbox" id="module14"> TEC+ DISK 4</label>
+											      		<label><input type="checkbox" id="module13"> TEC+ DISK 5</label>
+											      		<label><input type="checkbox" id="module12"> TEC+ DISK 6</label>
+											      		<label><input type="checkbox" id="module11"> TEC+ DISK 7</label>
+											      		<label><input type="checkbox" id="module10"> TEC+ DISK 8</label>
+											      		<label><input type="checkbox" id="module09"> TEC+ DISK 9</label>
+											      		<hr/>
+											      		<label><input type="checkbox" id="module08"> TEC- DISK 1</label>
+											      		<label><input type="checkbox" id="module07"> TEC- DISK 2</label>
+											      		<label><input type="checkbox" id="module06"> TEC- DISK 3</label>
+											      		<label><input type="checkbox" id="module05"> TEC- DISK 4</label>
+											      		<label><input type="checkbox" id="module04"> TEC- DISK 5</label>
+											      		<label><input type="checkbox" id="module03"> TEC- DISK 6</label>
+											      		<label><input type="checkbox" id="module02"> TEC- DISK 7</label>
+											      		<label><input type="checkbox" id="module01"> TEC- DISK 8</label>
+											      		<label><input type="checkbox" id="module00"> TEC- DISK 9</label>
+											      	</div>
+											    </div>
+										    </div>
+										</div>
+							      	</div>
+						      </div>
+					    </div>
+					   <!--  <div class="panel-footer"><button class="btn btn-block" id="collapse-children"><span class="glyphicon glyphicon-menu-up"></span> Collapse innermost children <span class="glyphicon glyphicon-menu-up"></span></button></div> -->
+					  </div>
+					</div> 
+				</div>
+				<div class="col-md-4">
+					<div class="panel panel-default option-selection">
+					    <div class="panel-heading">Options</div>
+					    <div class="panel-body">
+					    	<div class="form-inline">
+					    		<div class="form-group">
+					    			<input class="form-control" id="runMin" type="text" placeholder="RUN MIN">
+					    		</div>
+					    		<div class="form-group">
+					    			<input class="form-control" id="runMax" type="text" placeholder="RUN MAX">
+					    		</div>
+
+					    	</div>
+
+					    	<div id="slider"></div>
+
+					    	<div id="optionSelectionSubPart">
+						    	<label><input type="checkbox" id="optionModules"> Modules</label>
+						    	<label><input type="checkbox" id="optionFibers"> Fibers</label>
+						    	<label><input type="checkbox" id="optionAPVs"> APVs</label>
+						    	<label><input type="checkbox" id="optionStrips"> Strips</label>
+					    	</div>
+
+					    </div>
+					</div>
+					<button class="btn btn-warning btn-block" id="plotImages">Start plotting</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="container" id="plotContainer">
+
+	<canvas id="thePlot"></canvas>
+
+</div>
+
 </body>
 
 </html>
