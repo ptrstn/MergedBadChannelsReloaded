@@ -138,11 +138,13 @@ $(document).ready(function() {
 		console.log("\trun min: " + runMin);
 		console.log("\trun max: " + runMax);
 
+		$("#plotImages").css("background-image", "url(\"img/magnify.gif\")");
+
 		$.post("php/getDataFromFile.php", {startRun : runMin,
 										   endRun : runMax,
 										   moduleStr : moduleStr,
 										   optionStr : optionStr}, function(data){
-												
+												$("#plotImages").css("background-image", "");
 												chartDataRepresentation = (getChartDataRepresentation(data, null));
 
 												if (thisPlotContext == null)
@@ -178,16 +180,43 @@ $(document).ready(function() {
 																	min: 1
 																}
 															},
+															elements: {
+										                        point: {
+										                            pointStyle: 'line',
+										                        }
+										                    },
+										                    title: {
+										                    	display : true,
+										                    	text: "Merged bad Modules for runs: " + runMin + " - " + runMax,
+										                    },
+										                    scales: {
+											                    xAxes: [{
+											                        display: true,
+											                        scaleLabel: {
+											                            display: true,
+											                            labelString: 'Run #'
+											                        }
+											                    }],
+											                    yAxes: [{
+											                        display: true,
+											                        scaleLabel: {
+											                            display: true,
+											                            labelString: 'Bad channels'
+											                        }
+											                    }]
+											                },
 													    }
 													});		
 												}
 												else{
 													console.log("Reusing existing chart...");
 													thisChart.config.data = chartDataRepresentation;
-													thisChart.update();
-													console.log(thisChart);
-												}
+													thisChart.config.options.title.text = "Merged bad Modules for runs: " + runMin + " - " + runMax;
 
+													thisChart.update();
+													
+												}
+												console.log(thisChart);
 																						
 
 										   }, "json");

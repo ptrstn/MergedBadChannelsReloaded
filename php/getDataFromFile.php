@@ -1,6 +1,6 @@
 <?php
 
-$TRACKER = 1 << 38;
+/*$TRACKER = 1 << 38;
 
 $TIB = 1 << 37;
 $TID = 1 << 36;
@@ -48,10 +48,10 @@ $TEC9M = 1 << 0;
 $MODULES = 1 << 3;
 $FIBERS = 1 << 2;
 $APVS = 1 << 1;
-$STRIPS = 1 << 0;
+$STRIPS = 1 << 0;*/
 
 
-function getDataFromFile($filename, $currentDictionary, $modulesToMonitor, $options)
+function getStripDataFromFile($filename, $currentDictionary, $modulesToMonitor, $options)
 {
 	$handle = fopen($filename, "r");
 
@@ -97,7 +97,8 @@ function getDataFromFile($filename, $currentDictionary, $modulesToMonitor, $opti
 	    }
 
 	    fclose($handle);
-	} else {
+	} 
+	else {
 	    echo "The file: ".$filename." does not exist!";
 	} 
 	return $currentDictionary;
@@ -114,24 +115,27 @@ function traverseDirectories($runStart, $runStop, $modulesToMonitor, $options)
 
 		for ($year = 2016; $year <= 2017; $year++)
 		{
-			$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$run."/StreamExpress/MergedBadComponents_run".$run.".txt";
+			$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$run."/StreamExpress/";
 			
+			$stripFile = "MergedBadComponents_run".$run.".txt";
+			$pixelFile = "PixZeroOccROCs_run".$run.".txt";
+
 			if (file_exists($currPath))
 			{
 				// echo $currPath."\n";
-
-				$dataDic = getDataFromFile($currPath, $dataDic, $modulesToMonitor, $options);
+				if (file_exists($currPath.$stripFile))
+					$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $modulesToMonitor, $options);
 
 				break;
 			}
 
-			$currPath = $BASEPATH."Data".$year."/Cosmics/".$runHigh."/".$run."/StreamExpressCosmics/MergedBadComponents_run".$run.".txt";
+			$currPath = $BASEPATH."Data".$year."/Cosmics/".$runHigh."/".$run."/StreamExpressCosmics/";
 			
 			if (file_exists($currPath))
 			{
 				// echo $currPath."\n";
-
-				$dataDic = getDataFromFile($currPath, $dataDic, $modulesToMonitor, $options);
+				if (file_exists($currPath.$stripFile))
+					$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $modulesToMonitor, $options);
 
 				break;
 			}

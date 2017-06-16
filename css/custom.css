@@ -23,7 +23,7 @@
 	padding-left: 15px;
 }
 
-.col-md-3:first-of-type{
+/*.col-md-3:first-of-type{
 	padding-left: 15px;
 }
 
@@ -34,7 +34,7 @@
 .col-md-3{
 	padding-left: 0;
 	padding-right: 0;
-}
+}*/
 
 .form-inline{
 	text-align: center;
@@ -79,9 +79,9 @@
 	margin-right: 15px;
 }
 
-.option-selection #optionSelectionSubPart{
+/*.option-selection #optionSelectionSubPart{
 	text-align: center;
-}
+}*/
 
 #plotImages{
 	margin-top: 10px;
@@ -89,6 +89,11 @@
 	-webkit-transition: all 2s;
 	-moz-transition: box-shadow 2s;
 	-o-transition: box-shadow 2s;*/
+
+	background-size: contain;
+    background-repeat: no-repeat;
+    background-position-x: 90%;
+
 }
 
 #plotImages:hover{
@@ -97,9 +102,11 @@
 }
 
 #plotContainer{
-	width: 75%;
+	width: 85%;
 	margin-left: auto;
 	margin-right:auto;
 	text-align: center;
 	border-style: hidden;
+
+	margin-bottom: 40px;
 }
