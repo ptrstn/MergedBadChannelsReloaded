@@ -5,6 +5,11 @@ $(document).ready(function() {
 	var minSliderVal = 261370;
 	var maxSliderVal = 320000;
 	var ticks = []
+
+	var thisPlotContext = null;
+	var thisChart = null;
+	var chartDataRepresentation = null;
+
 	for (i = minSliderVal + 10000; i < maxSliderVal ; i+=10000)
 	{
 		var mainVal = Math.floor(i / 10000) * 10000;
@@ -44,68 +49,148 @@ $(document).ready(function() {
 		slider.noUiSlider.set([null, $(this).val()]);
 	});
 
+	function generateRandomColor(){
+		var R = Math.floor(Math.random() * 255);
+		var G = Math.floor(Math.random() * 255);
+		var B = Math.floor(Math.random() * 255);
+
+		return "rgb(" + R + ", " + G + ", " + B + ")";
+	}
+
+	function getChartDataRepresentation(data, options)
+	{
+		var labelsSaved = false;
+		var labels = [];
+		var datasets = [];
+		var optionStr = ["Modules", "Fibers" , "APVs" , "Strips"];
+
+	    for (var moduleName in data) //gets for example TEC+ DISK 7
+	    {
+			var runsArr = data[moduleName];
+			
+			var vals = [[], [], [], []];
+			for (var runNum in runsArr)
+			{
+				if (!labelsSaved) labels.push(runNum);
+
+			    var allVals = runsArr[runNum];
+			    for (var i = 0; i < allVals.length; ++i)
+			    {
+			    	if (allVals[i] != -1)
+			    	{
+			    		vals[i].push(allVals[i]);
+			    	}
+			    }
+			}
+			labelsSaved = true;
+
+			for (var i = 0; i < vals.length; ++i)
+			{
+				if (vals[i].length)
+				{
+					datasets.push({
+						label : moduleName + " " + optionStr[i],
+						data : vals[i],
+						borderWidth: 3,
+		            	borderColor: generateRandomColor(),
+		            	fill: false,
+		            	steppedLine: true,
+					})
+				}
+			}
+			// console.log(datasets);
+	    }
+
+	    return { labels : labels,
+	    		 datasets : datasets,
+				}
+	}
 
 	$("#plotImages").on("click", function(){
 		console.log("Process Started!");
-		/////////////////////////////////////////////////////
-		var ctx = $("#thePlot")[0].getContext('2d');
+		
+		//packing things tight
+		var objs = $(".module-selection input[id^='module']:checked");
+		console.log(objs.length + " modules to monitor");
 
-		$("#thePlot").css("border-style", "ridge");
+		var moduleStr = "";
+		for (i = 0; i < objs.length; ++i)
+		{
+			var sub = $(objs[i]).attr("id").substr(6, 2);
+			moduleStr = moduleStr + sub + "/";
+		}
 
-		var myChart = new Chart(ctx, {
-		    type: 'line',
-		    data: {
-		        labels: [1, 2,3,4,5,6],
-		        datasets: [{
-		        	// steppedLine: true,
-		            label: '# of Votes',
-		            data: [12, 19, 3, 5, 2, 3],
-		            // backgroundColor: [
-		            //     'rgba(255, 99, 132, 0.2)',
-		            //     'rgba(54, 162, 235, 0.2)',
-		            //     'rgba(255, 206, 86, 0.2)',
-		            //     'rgba(75, 192, 192, 0.2)',
-		            //     'rgba(153, 102, 255, 0.2)',
-		            //     'rgba(255, 159, 64, 0.2)'
-		            // ],
-		            // borderColor: [
-		            //     'rgba(255,99,132,1)',
-		            //     'rgba(54, 162, 235, 1)',
-		            //     'rgba(255, 206, 86, 1)',
-		            //     'rgba(75, 192, 192, 1)',
-		            //     'rgba(153, 102, 255, 1)',
-		            //     'rgba(255, 159, 64, 1)'
-		            // ],
-		            borderWidth: 3,
-		            borderColor: 'rgba(255, 159, 64, 1)',
-		            fill: false,
-		        }]
-		    },
-		    options: {
-		        scales: {
-		            yAxes: [{
-		                ticks: {
-		                    beginAtZero:true
-		                }
-		            }]
-		        },
-	        	pan: {
-					enabled: false,
-					mode: 'xy',
-					// speed: 10,
-					// threshold: 100
-				},
-				zoom: {
-					enabled: true,
-					mode: 'xy',
-					limits: {
-						max: 1,
-						min: 1
-					}
-				},
-		    }
-		});		
+		objs = $(".option-selection input[id^='option']:checked");
+		console.log(objs.length + " options to monitor");
+		var optionStr = "";
+		for (i = 0; i < objs.length; ++i)
+		{
+			var sub = $(objs[i]).attr("id").substr(7, 1);
+			optionStr = optionStr + sub + "/";
+		}
 
+		var runMin = $(".option-selection #runMin").val();
+		var runMax = $(".option-selection #runMax").val();
+
+		console.log("Complete set of parameters:");
+		console.log("\tmodules: " + moduleStr);
+		console.log("\toptions: " + optionStr);
+		console.log("\trun min: " + runMin);
+		console.log("\trun max: " + runMax);
+
+		$.post("php/getDataFromFile.php", {startRun : runMin,
+										   endRun : runMax,
+										   moduleStr : moduleStr,
+										   optionStr : optionStr}, function(data){
+												
+												chartDataRepresentation = (getChartDataRepresentation(data, null));
+
+												if (thisPlotContext == null)
+												{
+													console.log("Creating new 2D context...");
+													thisPlotContext = $("#thePlot")[0].getContext('2d');
+
+													$("#thePlot").css("border-style", "ridge");
+
+													thisChart = new Chart(thisPlotContext, {
+													    type: 'line',
+													    data: chartDataRepresentation,
+
+													    options: {
+													        scales: {
+													            yAxes: [{
+													                ticks: {
+													                    beginAtZero:true
+													                }
+													            }]
+													        },
+												        	pan: {
+																enabled: false,
+																mode: 'xy',
+																// speed: 10,
+																// threshold: 100
+															},
+															zoom: {
+																enabled: false,
+																mode: 'xy',
+																limits: {
+																	max: 1,
+																	min: 1
+																}
+															},
+													    }
+													});		
+												}
+												else{
+													console.log("Reusing existing chart...");
+													thisChart.config.data = chartDataRepresentation;
+													thisChart.update();
+													console.log(thisChart);
+												}
+
+																						
+
+										   }, "json");
 	});
 
 });

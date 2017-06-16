@@ -140,8 +140,52 @@ function traverseDirectories($runStart, $runStop, $modulesToMonitor, $options)
 	return $dataDic;
 }
 
-$dataDic = traverseDirectories(295643, 295660, $STRIPS, $TRACKER + $TEC3M + $TOB);
+function bitsToInt($arr)
+{
+	$outVal = 0;
+	for ($i = 0; $i < sizeof($arr); $i++)
+	{
+		if ($arr[$i] == "") continue;
 
-var_dump($dataDic);
+		$num = intval($arr[$i]);
+		// echo $num."\n";
+
+		$outVal += (1 << $num);
+	}	
+	return $outVal;
+}
+
+// $dataDic = traverseDirectories(295643, 295660, $STRIPS, $TRACKER + $TEC3M + $TOB);
+
+// $STARTRUN = 295643;//intval(urldecode($_POST['startRun']));
+// $ENDRUN = 295660;//intval(urldecode($_POST['endRun']));
+// $MODULESTR = "38/09/";//urldecode($_POST['moduleStr']);
+// $OPTIONSTR = "3/0";//urldecode($_POST['optionStr']);
+
+$STARTRUN = intval(urldecode($_POST['startRun']));
+$ENDRUN = intval(urldecode($_POST['endRun']));
+$MODULESTR = urldecode($_POST['moduleStr']);
+$OPTIONSTR = urldecode($_POST['optionStr']);
+
+if ($MODULESTR != "" && $OPTIONSTR != "")
+{
+	$modulesExploded = explode("/", $MODULESTR);
+	$optionsExploded = explode("/", $OPTIONSTR);
+
+	$modulesToMonitor = bitsToInt($modulesExploded);
+	$optionsToMonitor = bitsToInt($optionsExploded);
+
+	// echo $modulesToMonitor."\n".$optionsToMonitor."\n";
+
+	$dataOut = traverseDirectories($STARTRUN, $ENDRUN, $optionsToMonitor, $modulesToMonitor );
+
+	// var_dump($dataOut);
+	echo json_encode($dataOut);
+}
+else{
+	echo json_encode(NULL);
+}
+
+
 
 ?>
