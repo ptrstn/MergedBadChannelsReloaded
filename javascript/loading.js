@@ -1,14 +1,10 @@
 $(document).ready(function() {
-	console.log("on load");
 
+	// RUN SLIDER
 	var initialSliderValues = [270000, 300000];
 	var minSliderVal = 261370;
 	var maxSliderVal = 320000;
 	var ticks = []
-
-	var thisPlotContext = null;
-	var thisChart = null;
-	var chartDataRepresentation = null;
 
 	for (i = minSliderVal + 10000; i < maxSliderVal ; i+=10000)
 	{
@@ -49,62 +45,27 @@ $(document).ready(function() {
 		slider.noUiSlider.set([null, $(this).val()]);
 	});
 
-	function generateRandomColor(){
-		var R = Math.floor(Math.random() * 255);
-		var G = Math.floor(Math.random() * 255);
-		var B = Math.floor(Math.random() * 255);
+	// TOGGLERS
+	$('#runDateToggle').bootstrapToggle('on');
+	$('#careAboutRunLength').bootstrapToggle('off');
 
-		return "rgb(" + R + ", " + G + ", " + B + ")";
-	}
+	$("#runDateToggle").change(function(){
+		$('#datePicker').toggle();
+		$('#runRangePicker').toggle();
+	});
 
-	function getChartDataRepresentation(data, options)
-	{
-		var labelsSaved = false;
-		var labels = [];
-		var datasets = [];
-		var optionStr = ["Modules", "Fibers" , "APVs" , "Strips"];
+	// DATEPICKER
+	$('.input-daterange').datepicker({
+        format: "dd/mm/yyyy",
+        weekStart: 1,
+        daysOfWeekHighlighted: "0",
+        calendarWeeks: true,
+        autoclose: true,
+        todayHighlight: true,
+        maxViewMode: 3
+    });
 
-	    for (var moduleName in data) //gets for example TEC+ DISK 7
-	    {
-			var runsArr = data[moduleName];
-			
-			var vals = [[], [], [], []];
-			for (var runNum in runsArr)
-			{
-				if (!labelsSaved) labels.push(runNum);
-
-			    var allVals = runsArr[runNum];
-			    for (var i = 0; i < allVals.length; ++i)
-			    {
-			    	if (allVals[i] != -1)
-			    	{
-			    		vals[i].push(allVals[i]);
-			    	}
-			    }
-			}
-			labelsSaved = true;
-
-			for (var i = 0; i < vals.length; ++i)
-			{
-				if (vals[i].length)
-				{
-					datasets.push({
-						label : moduleName + " " + optionStr[i],
-						data : vals[i],
-						borderWidth: 3,
-		            	borderColor: generateRandomColor(),
-		            	fill: false,
-		            	steppedLine: true,
-					})
-				}
-			}
-			// console.log(datasets);
-	    }
-
-	    return { labels : labels,
-	    		 datasets : datasets,
-				}
-	}
+	////////////////////////////////////////////////////////////////
 
 	$("#plotImages").on("click", function(){
 		console.log("Process Started!");
@@ -129,6 +90,11 @@ $(document).ready(function() {
 			optionStr = optionStr + sub + "/";
 		}
 
+		if ($("#module60").is(":checked")) //small workaround - inserting fake option
+		{
+			optionStr = optionStr + "10/";
+		}
+
 		var runMin = $(".option-selection #runMin").val();
 		var runMax = $(".option-selection #runMax").val();
 
@@ -145,80 +111,7 @@ $(document).ready(function() {
 										   moduleStr : moduleStr,
 										   optionStr : optionStr}, function(data){
 												$("#plotImages").css("background-image", "");
-												chartDataRepresentation = (getChartDataRepresentation(data, null));
-
-												if (thisPlotContext == null)
-												{
-													console.log("Creating new 2D context...");
-													thisPlotContext = $("#thePlot")[0].getContext('2d');
-
-													$("#thePlot").css("border-style", "ridge");
-
-													thisChart = new Chart(thisPlotContext, {
-													    type: 'line',
-													    data: chartDataRepresentation,
-
-													    options: {
-													        scales: {
-													            yAxes: [{
-													                ticks: {
-													                    beginAtZero:true
-													                }
-													            }]
-													        },
-												        	pan: {
-																enabled: false,
-																mode: 'xy',
-																// speed: 10,
-																// threshold: 100
-															},
-															zoom: {
-																enabled: false,
-																mode: 'xy',
-																limits: {
-																	max: 1,
-																	min: 1
-																}
-															},
-															elements: {
-										                        point: {
-										                            pointStyle: 'line',
-										                        }
-										                    },
-										                    title: {
-										                    	display : true,
-										                    	text: "Merged bad Modules for runs: " + runMin + " - " + runMax,
-										                    },
-										                    scales: {
-											                    xAxes: [{
-											                        display: true,
-											                        scaleLabel: {
-											                            display: true,
-											                            labelString: 'Run #'
-											                        }
-											                    }],
-											                    yAxes: [{
-											                        display: true,
-											                        scaleLabel: {
-											                            display: true,
-											                            labelString: 'Bad channels'
-											                        }
-											                    }]
-											                },
-													    }
-													});		
-												}
-												else{
-													console.log("Reusing existing chart...");
-													thisChart.config.data = chartDataRepresentation;
-													thisChart.config.options.title.text = "Merged bad Modules for runs: " + runMin + " - " + runMax;
-
-													thisChart.update();
-													
-												}
-												console.log(thisChart);
-																						
-
+												CreatePlot(data);
 										   }, "json");
 	});
 
