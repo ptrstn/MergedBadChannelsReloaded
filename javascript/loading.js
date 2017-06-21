@@ -52,6 +52,8 @@ $(document).ready(function() {
 	$("#runDateToggle").change(function(){
 		$('#datePicker').toggle();
 		$('#runRangePicker').toggle();
+
+		// console.log($("#runDateToggle").parent().hasClass("off"));
 	});
 
 	// DATEPICKER
@@ -64,6 +66,14 @@ $(document).ready(function() {
         todayHighlight: true,
         maxViewMode: 3
     });
+
+    var today = moment();
+	var todayStr = moment().format('DD/MM/YYYY');
+	var histDateStr = today.add(-4, 'day').format('DD/MM/YYYY');
+	// console.log(todayStr);
+
+	$("#datepicker #dateStart").val(histDateStr);
+	$("#datepicker #dateEnd").val(todayStr);
 
 	////////////////////////////////////////////////////////////////
 
@@ -95,24 +105,48 @@ $(document).ready(function() {
 			optionStr = optionStr + "10/";
 		}
 
-		var runMin = $(".option-selection #runMin").val();
-		var runMax = $(".option-selection #runMax").val();
+		var start = "";
+		var end = "";
+		is_searchbyrun = "";
+
+		if ($("#runDateToggle").parent().hasClass("off") == false)
+		{
+			is_searchbyrun = true;
+
+			start = $(".option-selection #runMin").val();
+			end = $(".option-selection #runMax").val();
+		} 
+		else
+		{
+			is_searchbyrun = false;
+
+			start = $("#datepicker #dateStart").val();
+			end = $("#datepicker #dateEnd").val();
+		}	
 
 		console.log("Complete set of parameters:");
 		console.log("\tmodules: " + moduleStr);
 		console.log("\toptions: " + optionStr);
-		console.log("\trun min: " + runMin);
-		console.log("\trun max: " + runMax);
+		console.log("\tis search by run?: " + is_searchbyrun);
+		console.log("\trun min: " + start);
+		console.log("\trun max: " + end);
+
+		// return;
 
 		$("#plotImages").css("background-image", "url(\"img/magnify.gif\")");
 
-		$.post("php/getDataFromFile.php", {startRun : runMin,
-										   endRun : runMax,
+		$.post("php/getDataFromFile.php", {start : start,
+										   end : end,
+										   is_searchbyrun : is_searchbyrun,
 										   moduleStr : moduleStr,
 										   optionStr : optionStr}, function(data){
 												$("#plotImages").css("background-image", "");
+
 												CreatePlot(data);
-										   }, "json");
+												
+										   }
+										   , "json"
+										   );
 	});
 
 });

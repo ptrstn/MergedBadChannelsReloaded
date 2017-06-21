@@ -132,7 +132,7 @@ function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $module
 
 
 //look
-function traverseDirectories($runStart, $runStop, $modulesToMonitor, $options)
+function traverseDirectories($start, $end, $is_searchbyrun, $modulesToMonitor, $options)
 {
 	$dataDic = array(
 					"STR" => array(),
@@ -144,6 +144,28 @@ function traverseDirectories($runStart, $runStop, $modulesToMonitor, $options)
 	$YEARHIGH = 2017;
 
 	$searchingYearStart = $YEARLOW;
+
+	$COMMANDBASE = "python ../python/rhapi.py \"select r.runnumber, r.duration from runreg_tracker.runs r ";
+	$COMMANDAPPENDIX = " -f json";
+	$currCommand = "";
+
+	if ($is_searchbyrun)
+	{
+		$currCommand = $COMMANDBASE."where r.runnumber between $start and $end\"".$COMMANDAPPENDIX;
+	}
+	else
+	{
+		$currCommand = $COMMANDBASE."where r.starttime between to_date('$start', 'dd/mm/yyyy') and to_date('$end', 'dd/mm/yyyy')\"".$COMMANDAPPENDIX;
+	}
+
+	// echo $currCommand."\n";
+	$commandOutput = shell_exec($currCommand);
+	$commandOutput = str_replace("u'data'", "\"data\"", $commandOutput);
+	$commandOutput = json_decode($commandOutput, true);
+
+	// echo var_dump($commandOutput);
+	// echo var_dump($commandOutput);
+	// return;
 
 	$pixelConnectionDic = array(
 						"L1" => array("Barrel Layer 1", 58),
@@ -173,41 +195,45 @@ function traverseDirectories($runStart, $runStop, $modulesToMonitor, $options)
 						"of" => array("Pixel", 60),
 						);
 
-	for($run = $runStart; $run <= $runStop; $run++)
-	{
-		$runHigh = intval($run / 1000);
+	// echo var_dump($commandOutput);
 
+	for($runNum = intval($start); $runNum <= intval($end); $runNum++)
+	// foreach ($commandOutput["data"] as $run)
+	{
+		// $runNum = $run[0];
+		$runHigh = intval($runNum / 1000);
+		
 		for ($year = $searchingYearStart; $year <= $YEARHIGH; $year++)
 		{
-			$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$run."/StreamExpress/";
+			$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$runNum."/StreamExpress/";
 			
-			$stripFile = "MergedBadComponents_run".$run.".txt";
-			$pixelFile = "PixZeroOccROCs_run".$run.".txt";
+			$stripFile = "MergedBadComponents_run".$runNum.".txt";
+			$pixelFile = "PixZeroOccROCs_run".$runNum.".txt";
 
 			if (file_exists($currPath))
 			{
 				// echo $currPath."\n";
 				if (file_exists($currPath.$stripFile))
-					$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $run, $modulesToMonitor, $options);
+					$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $runNum, $modulesToMonitor, $options);
 
 				if (file_exists($currPath.$pixelFile))
-					$dataDic = getPixelDataFromFile($currPath.$pixelFile, $dataDic, $run, $modulesToMonitor, $options, $pixelConnectionDic);
+					$dataDic = getPixelDataFromFile($currPath.$pixelFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDic);
 
 				$searchingYearStart = $year;
 
 				break;
 			}
 
-			$currPath = $BASEPATH."Data".$year."/Cosmics/".$runHigh."/".$run."/StreamExpressCosmics/";
+			$currPath = $BASEPATH."Data".$year."/Cosmics/".$runHigh."/".$runNum."/StreamExpressCosmics/";
 			
 			if (file_exists($currPath))
 			{
 				// echo $currPath."\n";
 				if (file_exists($currPath.$stripFile))
-					$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $run, $modulesToMonitor, $options);
+					$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $runNum, $modulesToMonitor, $options);
 
 				if (file_exists($currPath.$pixelFile))
-					$dataDic = getPixelDataFromFile($currPath.$pixelFile, $dataDic, $run, $modulesToMonitor, $options, $pixelConnectionDic);
+					$dataDic = getPixelDataFromFile($currPath.$pixelFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDic);
 
 				$searchingYearStart = $year;
 
@@ -236,20 +262,23 @@ function bitsToInt($arr)
 // $dataDic = traverseDirectories(295643, 295660, $STRIPS, $TRACKER + $TEC3M + $TOB);
 
 //DEBUG MODE ON
-// $STARTRUN = 295643;
-// $ENDRUN = 295660;
+// $START = "15/06/2017";
+// $END = "16/06/2017";
+// $IS_SEARCHBYRUN = false;
 // $MODULESTR = "38/09/";
 // $OPTIONSTR = "3/0";
 
-// $STARTRUN = 297000;
-// $ENDRUN = 297010;
+// $START = "297000";
+// $END = "297010";
+// $IS_SEARCHBYRUN = true;
 // $MODULESTR = "58/45/";
 // $OPTIONSTR = "4/";
 
-$STARTRUN = intval(urldecode($_POST['startRun']));
-$ENDRUN = intval(urldecode($_POST['endRun']));
+$START = urldecode($_POST['start']);
+$END = urldecode($_POST['end']);
 $MODULESTR = urldecode($_POST['moduleStr']);
 $OPTIONSTR = urldecode($_POST['optionStr']);
+$IS_SEARCHBYRUN = ($_POST['is_searchbyrun'] === 'true');
 
 if ($MODULESTR != "" && $OPTIONSTR != "")
 {
@@ -261,10 +290,14 @@ if ($MODULESTR != "" && $OPTIONSTR != "")
 
 	// echo $modulesToMonitor."\n".$optionsToMonitor."\n";
 
-	$dataOut = traverseDirectories($STARTRUN, $ENDRUN, $modulesToMonitor, $optionsToMonitor );
+	$dataOut = traverseDirectories($START, $END, $IS_SEARCHBYRUN, $modulesToMonitor, $optionsToMonitor );
 
 	// var_dump($dataOut);
 	echo json_encode($dataOut);
+
+	// echo shell_exec("python ../python/rhapi.py");
+	// echo "SOME TEXT...\n";
+	// echo readfile("http://vocms00169:2113/table/hcal/cond_loader_table_cols")."\n";
 }
 else{
 	echo json_encode(NULL);

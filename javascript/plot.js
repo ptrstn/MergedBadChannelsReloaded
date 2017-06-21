@@ -41,7 +41,7 @@ function getChartDataRepresentation(data, options)
 			    	if (allVals[i] != -1)
 			    	{
 			    		vals[i].push({x : runNum,
-			    					  y: allVals[i],
+			    					  y : allVals[i],
 			    					 });
 			    	}
 			    }
@@ -79,8 +79,9 @@ function getChartDataRepresentation(data, options)
 
 function CreatePlot(data)
 {
-	chartDataRepresentation = (getChartDataRepresentation(data, null));
 	console.log(data);
+
+	chartDataRepresentation = (getChartDataRepresentation(data, null))
 	
 	if (thisPlotContext == null)
 	{
@@ -102,18 +103,18 @@ function CreatePlot(data)
 		            }]
 		        },
 	        	pan: {
-					enabled: false,
-					mode: 'xy',
-					// speed: 10,
-					// threshold: 100
+					enabled: true,
+					mode: 'y',
+					speed: 10,
+					threshold: 100
 				},
 				zoom: {
 					enabled: true,
-					drag: true,
+					drag: false,
 					mode: 'xy',
 					limits: {
-						max: 10,
-						min: 0.5,
+						max: 1000,
+						min: 100,
 					}
 				},
 				elements: {
@@ -123,7 +124,7 @@ function CreatePlot(data)
                 },
                 title: {
                 	display : true,
-                	text: "Merged bad Modules for runs: " + runMin + " - " + runMax,
+                	text: "Merged bad Modules for runs: " + chartDataRepresentation.labels[0] + " - " + chartDataRepresentation.labels[chartDataRepresentation.labels.length - 1],
                 },
                 tooltips: {
 					position: 'nearest',
@@ -170,7 +171,9 @@ function CreatePlot(data)
 	else{
 		console.log("Reusing existing chart...");
 		thisChart.config.data = chartDataRepresentation;
-		thisChart.config.options.title.text = "Merged bad Modules for runs: " + runMin + " - " + runMax;
+		thisChart.config.options.title.text = "Merged bad Modules for runs: " + chartDataRepresentation.labels[0] + " - " + chartDataRepresentation.labels[chartDataRepresentation.labels.length - 1];
+
+		thisChart.resetZoom()
 
 		thisChart.update();
 		

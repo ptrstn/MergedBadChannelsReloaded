@@ -28,6 +28,8 @@
 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment-with-locales.min.js"></script>
+
 <link href="css/custom.css" rel="stylesheet">
 <script src="javascript/plot.js"></script>
 <script src="javascript/loading.js"></script>
@@ -37,7 +39,6 @@
 </title>
 
 <body>
-
 
 <div class="panel-group">
 	<div class="jumbotron">
@@ -198,85 +199,81 @@
 								<div class="panel-body">
 									<div class="row">
 
-									<div class="col-md-4">
-										<div class="panel-group">
-										  	<div class="panel panel-default">
-										    	<div class="panel-heading">
-										    		<div class="panel-heading-group">
-														<div class="checkbox panel-title">
-															<label><input type="checkbox" id="module59"></label>
-														</div>
-											      		<h4 class="panel-title">
-											        		<a data-toggle="collapse" href="#barrelTab">Barrel</a>
-											      		</h4>
-										      		</div>
-										    	</div>
-										    	<div id="barrelTab" class="panel-collapse collapse in">
-										      		<div class="panel-body">
-										      			<label><input type="checkbox" id="module58"> Barrel Layer 1</label>
-										      			<label><input type="checkbox" id="module57"> Barrel Layer 2</label>
-										      			<label><input type="checkbox" id="module56"> Barrel Layer 3</label>
-										      			<label><input type="checkbox" id="module55"> Barrel Layer 4</label>
-										      		</div>
-										    	</div>
-										  	</div>
+										<div class="col-md-4">
+											<div class="panel-group">
+											  	<div class="panel panel-default">
+											    	<div class="panel-heading">
+											    		<div class="panel-heading-group">
+															<div class="checkbox panel-title">
+																<label><input type="checkbox" id="module59"></label>
+															</div>
+												      		<h4 class="panel-title">
+												        		<a data-toggle="collapse" href="#barrelTab">Barrel</a>
+												      		</h4>
+											      		</div>
+											    	</div>
+											    	<div id="barrelTab" class="panel-collapse collapse in">
+											      		<div class="panel-body">
+											      			<label><input type="checkbox" id="module58"> Barrel Layer 1</label>
+											      			<label><input type="checkbox" id="module57"> Barrel Layer 2</label>
+											      			<label><input type="checkbox" id="module56"> Barrel Layer 3</label>
+											      			<label><input type="checkbox" id="module55"> Barrel Layer 4</label>
+											      		</div>
+											    	</div>
+											  	</div>
+											</div>
 										</div>
-									</div>
-									<div class="col-md-8">
-										<div class="panel-group">
-										  	<div class="panel panel-default">
-										    	<div class="panel-heading">
-										    		<div class="panel-heading-group">
-														<div class="checkbox panel-title">
-															<label><input type="checkbox" id="module54"></label>
-														</div>
-											      		<h4 class="panel-title">
-											        		<a data-toggle="collapse" href="#endcapTab">Endcap</a>
-											      		</h4>
-										      		</div>
-										    	</div>
-										    	<div id="endcapTab" class="panel-collapse collapse in">
-										      		<div class="panel-body">
+										<div class="col-md-8">
+											<div class="panel-group">
+											  	<div class="panel panel-default">
+											    	<div class="panel-heading">
+											    		<div class="panel-heading-group">
+															<div class="checkbox panel-title">
+																<label><input type="checkbox" id="module54"></label>
+															</div>
+												      		<h4 class="panel-title">
+												        		<a data-toggle="collapse" href="#endcapTab">Endcap</a>
+												      		</h4>
+											      		</div>
+											    	</div>
+											    	<div id="endcapTab" class="panel-collapse collapse in">
+											      		<div class="panel-body">
 
-										      			<div class="row">
-										      				<div class="col-md-6">
-										      					<label><input type="checkbox" id="module53"> Ring 1 Disk- 1</label>
-												      			<label><input type="checkbox" id="module52"> Ring 1 Disk- 2</label>
-												      			<label><input type="checkbox" id="module51"> Ring 1 Disk- 3</label>
-										      				</div>
-										      				<div class="col-md-6">
-										      					<label><input type="checkbox" id="module50"> Ring 1 Disk+ 1</label>
-												      			<label><input type="checkbox" id="module49"> Ring 1 Disk+ 2</label>
-												      			<label><input type="checkbox" id="module48"> Ring 1 Disk+ 3</label>
-										      				</div>
-										      			</div>
-										      			<hr/>
-										      			<div class="row">
-										      				<div class="col-md-6">
-										      					<label><input type="checkbox" id="module47"> Ring 2 Disk- 1</label>
-												      			<label><input type="checkbox" id="module46"> Ring 2 Disk- 2</label>
-												      			<label><input type="checkbox" id="module45"> Ring 2 Disk- 3</label>
-										      				</div>
-										      				<div class="col-md-6">
-										      					<label><input type="checkbox" id="module44"> Ring 2 Disk+ 1</label>
-												      			<label><input type="checkbox" id="module43"> Ring 2 Disk+ 2</label>
-												      			<label><input type="checkbox" id="module42"> Ring 2 Disk+ 3</label>
-										      				</div>
-										      			</div>
-										      			
-										      			
-
-										      		</div>
-										    	</div>
-										  	</div>
+											      			<div class="row">
+											      				<div class="col-md-6">
+											      					<label><input type="checkbox" id="module53"> Ring 1 Disk- 1</label>
+													      			<label><input type="checkbox" id="module52"> Ring 1 Disk- 2</label>
+													      			<label><input type="checkbox" id="module51"> Ring 1 Disk- 3</label>
+											      				</div>
+											      				<div class="col-md-6">
+											      					<label><input type="checkbox" id="module50"> Ring 1 Disk+ 1</label>
+													      			<label><input type="checkbox" id="module49"> Ring 1 Disk+ 2</label>
+													      			<label><input type="checkbox" id="module48"> Ring 1 Disk+ 3</label>
+											      				</div>
+											      			</div>
+											      			<hr/>
+											      			<div class="row">
+											      				<div class="col-md-6">
+											      					<label><input type="checkbox" id="module47"> Ring 2 Disk- 1</label>
+													      			<label><input type="checkbox" id="module46"> Ring 2 Disk- 2</label>
+													      			<label><input type="checkbox" id="module45"> Ring 2 Disk- 3</label>
+											      				</div>
+											      				<div class="col-md-6">
+											      					<label><input type="checkbox" id="module44"> Ring 2 Disk+ 1</label>
+													      			<label><input type="checkbox" id="module43"> Ring 2 Disk+ 2</label>
+													      			<label><input type="checkbox" id="module42"> Ring 2 Disk+ 3</label>
+											      				</div>
+											      			</div>
+											    
+											      		</div>
+											    	</div>
+											  	</div>
+											</div>
 										</div>
-									</div>
-
 									</div>
 								</div>
 							</div>
 						</div>
-
 					</div> 
 				</div>
 				<div class="col-md-4">
@@ -285,10 +282,10 @@
 					    <div class="panel-body">
 
 					    	<label class="checkbox-inline">
-					    		<input data-toggle="toggle" type="checkbox" data-on="Run" data-off="<span class='glyphicon glyphicon-calendar'></span> Time" data-size="small" id="runDateToggle" data-onstyle="primary" data-offstyle="info">
+					    		<input data-toggle="toggle" type="checkbox" data-on="Run" data-off="<span class='glyphicon glyphicon-calendar'></span> Time" data-size="small" id="runDateToggle" data-onstyle="primary" data-offstyle="info" disabled>
 					    	</label>
 					    	<label class="checkbox-inline">
-					    		<input data-toggle="toggle" type="checkbox" id="careAboutRunLength" data-on="<span class='glyphicon glyphicon-time'></span> Run length" data-off="Run by run", data-size="small" data-offstyle="info">
+					    		<input data-toggle="toggle" type="checkbox" id="careAboutRunLength" data-on="<span class='glyphicon glyphicon-time'></span> Run length" data-off="Run by run", data-size="small" data-offstyle="info" disabled>
 					    	</label>
 
 					    	<div id="runPicker">
@@ -304,22 +301,20 @@
 						    	</div>
 
 								<div class="input-daterange input-group" id="datePicker">
-							        <input type="text" class="form-control" name="start" placeholder="DATE START" />
+							        <input type="text" class="form-control" name="start" placeholder="DATE START" id="dateStart"/>
 							        <span class="input-group-addon">to</span>
-							        <input type="text" class="form-control" name="end" placeholder="DATE END" />
+							        <input type="text" class="form-control" name="end" placeholder="DATE END" id="dateEnd" />
 							    </div>
 						    </div>
 
 					    	<hr/>
 
 					    	<div id="optionSelectionSubPart">
-
 					    		<div class="row">
 
 					    			<div class="col-md-2">
 					    				<b>Strip:</b>
 					    			</div>
-
 					    			<div class="col-md-10">
 					    				<label><input type="checkbox" id="option-3-Modules"> Modules</label>
 								    	<label><input type="checkbox" id="option-2-Fibers"> Fibers</label>
@@ -333,7 +328,6 @@
 					    			<div class="col-md-2">
 					    				<b>Pixel:</b>
 					    			</div>
-
 					    			<div class="col-md-10">
 					    				<label><input type="checkbox" id="option-6-Dead"> Dead ROCs</label>
 								    	<label><input type="checkbox" id="option-5-Inefficient"> Inefficient ROCs</label>
@@ -341,11 +335,11 @@
 					    			</div>
 
 					    		</div>
-						    	
 					    	</div>
 
 					    </div>
 					</div>
+
 					<button class="btn btn-warning btn-block" id="plotImages">Start plotting</button>
 
 				</div>
