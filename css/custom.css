@@ -1,5 +1,6 @@
 .jumbotron{
 	padding: 10px;
+	margin: 0;
 }
 
 .jumbotron .container{
@@ -17,24 +18,12 @@
 
 .panel-group{
 	margin-bottom: 0;
+	/*box-shadow: 3px 3px 5px #AAAAAA;*/
 }
 
 .panel-heading-group{
 	padding-left: 15px;
 }
-
-/*.col-md-3:first-of-type{
-	padding-left: 15px;
-}
-
-.col-md-3:last-of-type{
-	padding-right: 15px;
-}
-
-.col-md-3{
-	padding-left: 0;
-	padding-right: 0;
-}*/
 
 .form-inline{
 	text-align: center;
@@ -62,10 +51,6 @@
 
 .noUi-pips-horizontal{
 	height: initial;
-}
-
-#plotContainer{
-	width: 95%;
 }
 
 .module-selection, .option-selection{
@@ -103,7 +88,7 @@
 }
 
 #plotContainer{
-	width: 85%;
+	width: 90%;
 	margin-left: auto;
 	margin-right:auto;
 	text-align: center;
@@ -135,4 +120,45 @@ hr{
 #runPicker{
 	margin-top: 10px;
 	height: 120px;
+}
+
+#expertModeSwitchContainer{
+	display: inline-block;
+	width: 80%;
+	text-align: right;
+	position: absolute;
+	margin-right: 20px;
+}
+
+#userDataPickingPanelBody
+{
+	display: initial;
+}
+
+#expertDataPickingPanelBody
+{
+	display: none;
+	height: 160px;
+}
+
+#expertQuery{
+	min-height: 75px;
+	max-height: 75px;
+	max-width: 100%;
+	min-width: 100%;
+}
+
+#expertHelpSection{
+	padding-top: 10px;
+}
+
+#plotControlPanel{
+	width: 90%;
+	text-align: right;
+	padding-right: 15px;
+	padding-left: 15px;
+	margin: 10px auto;
+
+	display: none;
+
 }

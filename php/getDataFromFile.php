@@ -1,5 +1,8 @@
 <?php
-
+/*
+	FOR FILLS: 5837 - 5849
+	RUNS: 296963 - 297219
+*/
 function getStripDataFromFile($filename, $currentDictionary, $runNumber, $modulesToMonitor, $options)
 {
 	// DID USER CHOOSE TO LOOK FOR STRIP PLOTS AT ALL
@@ -78,16 +81,21 @@ function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $module
 				if (substr($line, 0, 1) !== "#" && substr($line, 0, 3) !== "DQM")
 				{
 					$line = trim($line);
+					if (strlen($line) == 0) continue;
 
 					$components =  preg_split("/[\s,]+/", $line);
 
 					$elemName = trim($components[1]);
+					$elemName = trim($elemName, ":"); //maintain compatibility between old and new versions of the file
+					// echo $elemName."\n";
+					// echo trim($elemName, ":")."\n";
 
 					if ($elemName == "tot")
 					{
 						$elemName = $elemName.$totIdx;
 						$totIdx++;
 					}
+					
 					if ($modulesToMonitor & (1 << $pixelConnectionDic[$elemName][1]))
 					{
 						// echo sizeof($components)."\n";
@@ -114,8 +122,21 @@ function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $module
 							}
 						}
 						
+						$rubbish = true;
+						foreach ($valArr as $val)
+						{
+							if ($val != -1)
+							{
+								$rubbish = false;
+								break;
+							}
+						}
+
 						// var_dump($valArr);
-						$currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber] = $valArr;
+						if (!$rubbish){
+							$currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber] = $valArr;
+						}
+						
 					}
 				}
 			}
@@ -132,7 +153,7 @@ function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $module
 
 
 //look
-function traverseDirectories($start, $end, $is_searchbyrun, $modulesToMonitor, $options)
+function traverseDirectories($start, $end, $is_searchbyrun, $query, $modulesToMonitor, $options)
 {
 	$dataDic = array(
 					"STR" => array(),
@@ -195,8 +216,9 @@ function traverseDirectories($start, $end, $is_searchbyrun, $modulesToMonitor, $
 						"of" => array("Pixel", 60),
 						);
 
-	// echo var_dump($commandOutput);
+	$customRunArr = array(296963, 296964, 296965, 296966, 296967, 296968, 296969, 296970, 296971, 296972, 296976, 296977, 296978, 296979, 296980, 296982, 297001, 297002, 297003, 297004, 297005, 297006, 297007, 297009, 297010, 297011, 297012, 297013, 297014, 297015, 297016, 297017, 297018, 297019, 297020, 297047, 297048, 297049, 297050, 297051, 297052, 297053, 297054, 297055, 297056, 297057, 297070, 297071, 297072, 297096, 297098, 297099, 297100, 297101, 297102, 297103, 297104, 297106, 297107, 297108, 297109, 297110, 297111, 297112, 297113, 297114, 297119, 297120, 297155, 297156, 297160, 297161, 297162, 297163, 297164, 297166, 297167, 297168, 297169, 297170, 297171, 297172, 297173, 297174, 297175, 297176, 297177, 297178, 297179, 297180, 297181, 297211, 297215, 297218, 297219);
 
+	// foreach ($customRunArr as $runNum) 
 	for($runNum = intval($start); $runNum <= intval($end); $runNum++)
 	// foreach ($commandOutput["data"] as $run)
 	{
@@ -268,17 +290,19 @@ function bitsToInt($arr)
 // $MODULESTR = "38/09/";
 // $OPTIONSTR = "3/0";
 
-// $START = "297000";
-// $END = "297010";
+// $START = "280000";
+// $END = "285010";
 // $IS_SEARCHBYRUN = true;
-// $MODULESTR = "58/45/";
-// $OPTIONSTR = "4/";
+// $MODULESTR = "59/";
+// $OPTIONSTR = "6/";
 
 $START = urldecode($_POST['start']);
 $END = urldecode($_POST['end']);
 $MODULESTR = urldecode($_POST['moduleStr']);
 $OPTIONSTR = urldecode($_POST['optionStr']);
-$IS_SEARCHBYRUN = ($_POST['is_searchbyrun'] === 'true');
+$IS_SEARCHBYRUN = urldecode($_POST['is_searchbyrun'] === 'true');
+
+$QUERY = urldecode($_POST['query']);
 
 if ($MODULESTR != "" && $OPTIONSTR != "")
 {
@@ -290,7 +314,7 @@ if ($MODULESTR != "" && $OPTIONSTR != "")
 
 	// echo $modulesToMonitor."\n".$optionsToMonitor."\n";
 
-	$dataOut = traverseDirectories($START, $END, $IS_SEARCHBYRUN, $modulesToMonitor, $optionsToMonitor );
+	$dataOut = traverseDirectories($START, $END, $IS_SEARCHBYRUN, $QUERY, $modulesToMonitor, $optionsToMonitor );
 
 	// var_dump($dataOut);
 	echo json_encode($dataOut);
@@ -298,6 +322,37 @@ if ($MODULESTR != "" && $OPTIONSTR != "")
 	// echo shell_exec("python ../python/rhapi.py");
 	// echo "SOME TEXT...\n";
 	// echo readfile("http://vocms00169:2113/table/hcal/cond_loader_table_cols")."\n";
+
+	// $ch = curl_init();
+	// curl_setopt($ch, CURLOPT_URL, "http://vocms00169:2113/table/hcal/cond_loader_table_cols");
+	// curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)');
+	// curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	// curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+	// curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+	// $data = curl_exec($ch);
+	// $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	// curl_close($ch);
+
+	// echo $retcode."\n\n\n\n".$data;
+	// // echo readfile("array.py")."\n";
+
+	// /////
+
+	// $ch = curl_init();
+	// curl_setopt($ch, CURLOPT_URL, "http://www.ftj.agh.edu.pl/~Lankosz/");
+	// curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)');
+	// curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	// curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+	// curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+	// $data = curl_exec($ch);
+	// $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	// curl_close($ch);
+
+	// echo $retcode."\n\n\n\n".$data;
+
+
+
+
 }
 else{
 	echo json_encode(NULL);

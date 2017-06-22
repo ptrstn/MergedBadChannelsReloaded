@@ -4,7 +4,10 @@ $(document).ready(function() {
 	var initialSliderValues = [270000, 300000];
 	var minSliderVal = 261370;
 	var maxSliderVal = 320000;
-	var ticks = []
+	var ticks = [];
+	var dateFormat = "dd/mm/yyyy";
+
+	var savedPlots = 0;
 
 	for (i = minSliderVal + 10000; i < maxSliderVal ; i+=10000)
 	{
@@ -48,6 +51,8 @@ $(document).ready(function() {
 	// TOGGLERS
 	$('#runDateToggle').bootstrapToggle('on');
 	$('#careAboutRunLength').bootstrapToggle('off');
+	$('#expertModeToggle').bootstrapToggle('off');
+	$('#linLogToggle').bootstrapToggle('off');
 
 	$("#runDateToggle").change(function(){
 		$('#datePicker').toggle();
@@ -55,10 +60,18 @@ $(document).ready(function() {
 
 		// console.log($("#runDateToggle").parent().hasClass("off"));
 	});
+	$('#expertModeToggle').change(function(){
+		$("#userDataPickingPanelBody").toggle();
+		$("#expertDataPickingPanelBody").toggle();
+
+	})
+	$('#linLogToggle').change(function(){
+		changeAxisType($(this).parent().hasClass('off'));
+	});
 
 	// DATEPICKER
 	$('.input-daterange').datepicker({
-        format: "dd/mm/yyyy",
+        format: dateFormat,
         weekStart: 1,
         daysOfWeekHighlighted: "0",
         calendarWeeks: true,
@@ -68,14 +81,35 @@ $(document).ready(function() {
     });
 
     var today = moment();
-	var todayStr = moment().format('DD/MM/YYYY');
-	var histDateStr = today.add(-4, 'day').format('DD/MM/YYYY');
+	var todayStr = moment().format(dateFormat.toUpperCase());
+	var histDateStr = today.add(-4, 'day').format(dateFormat.toUpperCase());
 	// console.log(todayStr);
 
 	$("#datepicker #dateStart").val(histDateStr);
 	$("#datepicker #dateEnd").val(todayStr);
 
 	////////////////////////////////////////////////////////////////
+
+	$("#plotSaveBtn").on('click', function(){
+		var img = $('#thePlot')[0].toDataURL("image/png");
+
+		var afake = $("<a></a>").attr("href", img).attr("download", "plot" + savedPlots++ + ".png").css("display", "none").html("Link").appendTo("body");
+
+        $(afake)[0].click();
+        window.setTimeout(function () {
+            $(afake).remove();
+        }, 200);
+
+	});
+
+	$("#resetViewBtn").on('click', function(){
+		thisChart.resetZoom();
+	});
+
+	$("#careAboutRunLength").on('change', function()
+	{
+		$("#plotImages").click();
+	});
 
 	$("#plotImages").on("click", function(){
 		console.log("Process Started!");
@@ -107,26 +141,43 @@ $(document).ready(function() {
 
 		var start = "";
 		var end = "";
-		is_searchbyrun = "";
+		var is_searchbyrun = "";
 
-		if ($("#runDateToggle").parent().hasClass("off") == false)
+		var is_expertModeOn = $("#expertModeToggle").parent().hasClass("off") == false;
+		var query = "";
+
+		if (is_expertModeOn)
 		{
-			is_searchbyrun = true;
-
-			start = $(".option-selection #runMin").val();
-			end = $(".option-selection #runMax").val();
-		} 
+			query = $('#expertQuery').val();
+		}
 		else
 		{
-			is_searchbyrun = false;
+			if ($("#runDateToggle").parent().hasClass("off") == false)
+			{
+				is_searchbyrun = true;
 
-			start = $("#datepicker #dateStart").val();
-			end = $("#datepicker #dateEnd").val();
-		}	
+				start = $(".option-selection #runMin").val();
+				end = $(".option-selection #runMax").val();
+
+				query = "where r.runnumber between " + start + " and " + end + " ";
+			} 
+			else
+			{
+				is_searchbyrun = false;
+
+				start = $("#datepicker #dateStart").val();
+				end = $("#datepicker #dateEnd").val();
+
+				query = "where r.starttime between to_date('" + start + "', '" + dateFormat + "') and to_date('" + end + "', '" + dateFormat + "') ";
+			}
+		}
+	
 
 		console.log("Complete set of parameters:");
 		console.log("\tmodules: " + moduleStr);
 		console.log("\toptions: " + optionStr);
+		console.log("\tis expert mode one?: " + is_expertModeOn);
+		console.log("\tquery content: " + query);
 		console.log("\tis search by run?: " + is_searchbyrun);
 		console.log("\trun min: " + start);
 		console.log("\trun max: " + end);
@@ -135,14 +186,26 @@ $(document).ready(function() {
 
 		$("#plotImages").css("background-image", "url(\"img/magnify.gif\")");
 
+// TODO
+// When Run Registry Querying will start to work make this script send query ONLY
+//
+
+
 		$.post("php/getDataFromFile.php", {start : start,
 										   end : end,
 										   is_searchbyrun : is_searchbyrun,
+										   query : query,
 										   moduleStr : moduleStr,
 										   optionStr : optionStr}, function(data){
 												$("#plotImages").css("background-image", "");
 
 												CreatePlot(data);
+
+										        $('html, body').animate({
+										            scrollTop: $("#plotContainer").offset().top
+										        }, 500);
+
+												$("#plotControlPanel").css("display", "block");
 												
 										   }
 										   , "json"

@@ -278,35 +278,50 @@
 				</div>
 				<div class="col-md-4">
 					<div class="panel panel-primary option-selection">
-					    <div class="panel-heading">Options</div>
+					    <div class="panel-heading">
+					    	Options
+					    	<div id="expertModeSwitchContainer">
+						    	<label class="checkbox-inline">
+						    		<input data-toggle="toggle" type="checkbox" id="expertModeToggle" data-on="Expert mode: ON" data-off="Expert mode: OFF", data-size="mini" data-onstyle="danger" data-offstyle="primary" data-width="150">
+						    	</label>
+					    	</div>
+					    </div>
 					    <div class="panel-body">
 
-					    	<label class="checkbox-inline">
-					    		<input data-toggle="toggle" type="checkbox" data-on="Run" data-off="<span class='glyphicon glyphicon-calendar'></span> Time" data-size="small" id="runDateToggle" data-onstyle="primary" data-offstyle="info" disabled>
-					    	</label>
-					    	<label class="checkbox-inline">
-					    		<input data-toggle="toggle" type="checkbox" id="careAboutRunLength" data-on="<span class='glyphicon glyphicon-time'></span> Run length" data-off="Run by run", data-size="small" data-offstyle="info" disabled>
-					    	</label>
+						    <div id="userDataPickingPanelBody">
 
-					    	<div id="runPicker">
-						    	<div class="form-inline" id="runRangePicker">
-						    		<div class="form-group">
-						    			<input class="form-control" id="runMin" type="text" placeholder="RUN MIN">
-						    		</div>
-						    		<div class="form-group">
-						    			<input class="form-control" id="runMax" type="text" placeholder="RUN MAX">
-						    		</div>
+						    	<label class="checkbox-inline">
+						    		<input data-toggle="toggle" type="checkbox" data-on="Run" data-off="<span class='glyphicon glyphicon-calendar'></span> Time" data-size="small" id="runDateToggle" data-onstyle="primary" data-offstyle="info">
+						    	</label>						    	
 
-						    		<div id="slider"></div>
-						    	</div>
+						    	<div id="runPicker">
+							    	<div class="form-inline" id="runRangePicker">
+							    		<div class="form-group">
+							    			<input class="form-control" id="runMin" type="text" placeholder="RUN MIN">
+							    		</div>
+							    		<div class="form-group">
+							    			<input class="form-control" id="runMax" type="text" placeholder="RUN MAX">
+							    		</div>
 
-								<div class="input-daterange input-group" id="datePicker">
-							        <input type="text" class="form-control" name="start" placeholder="DATE START" id="dateStart"/>
-							        <span class="input-group-addon">to</span>
-							        <input type="text" class="form-control" name="end" placeholder="DATE END" id="dateEnd" />
+							    		<div id="slider"></div>
+							    	</div>
+
+									<div class="input-daterange input-group" id="datePicker">
+								        <input type="text" class="form-control" name="start" placeholder="DATE START" id="dateStart"/>
+								        <span class="input-group-addon">to</span>
+								        <input type="text" class="form-control" name="end" placeholder="DATE END" id="dateEnd" />
+								    </div>
 							    </div>
-						    </div>
-
+							</div>
+							<div id = "expertDataPickingPanelBody">
+								<label for="expertQuery">Query:</label>
+								<textarea class="form-control" rows="5" id="expertQuery" placeholder="where r.runnumber between 290000 and 295000 and r.pixel_present = 1 and r.tracker_present = 1"></textarea>
+								<div id="expertHelpSection">
+									Need help with running custom queries? Visit: 
+									<a href="http://runregistry.web.cern.ch/runregistry/" target="_blank">Run Registry</a> or 
+									<a href="https://twiki.cern.ch/twiki/bin/view/CMS/DqmRrApi" target="_blank">TWiki</a>
+								</div>
+							</div>
 					    	<hr/>
 
 					    	<div id="optionSelectionSubPart">
@@ -341,7 +356,6 @@
 					</div>
 
 					<button class="btn btn-warning btn-block" id="plotImages">Start plotting</button>
-
 				</div>
 
 			</div>
@@ -349,10 +363,19 @@
 	</div>
 </div>
 
+
+<div id="plotControlPanel">
+	<label class="checkbox-inline">
+		<input data-toggle="toggle" type="checkbox" id="careAboutRunLength" data-on="<span class='glyphicon glyphicon-time'></span> Run length" data-off="Run by run", data-size="small" data-offstyle="info" data-width="100">
+	</label>
+	<label class="checkbox-inline">
+		<input data-toggle="toggle" type="checkbox" id="linLogToggle" data-on="Log" data-off="Lin", data-size="small" data-offstyle="info" data-width="100">
+	</label>
+	<button class="btn btn-default btn-sm" id="resetViewBtn"><span class="glyphicon glyphicon-refresh"></span> Reset View</button>
+	<button class="btn btn-default btn-sm" id="plotSaveBtn"><span class="glyphicon glyphicon-floppy-disk"></span> Save Plot</button>
+</div>
 <div class="container" id="plotContainer">
-
 	<canvas id="thePlot"></canvas>
-
 </div>
 
 </body>
