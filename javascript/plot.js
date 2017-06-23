@@ -35,6 +35,10 @@ var logarithmicScaleOptions = [{
     }
 }];
 
+function intToStrWithLeadingZeros(num, size=5){ 
+	return ('00000' + num).substr(-size); 
+}
+
 function changeAxisType(isLinear)
 {
 	if (isLinear)
@@ -75,7 +79,7 @@ function getRandomColorFromTable()
 	return contrastingColors[val];
 }
 
-function getChartDataRepresentation(data, options)
+function getChartDataRepresentation(data, is_runByRunOn, options)
 {
 	var labels = [];
 	var datasets = [];
@@ -84,9 +88,9 @@ function getChartDataRepresentation(data, options)
 	var strOptionStr = [": Modules", ": Fibers" , ": APVs" , ": Strips"];
 	var pxoptionStr = [": Dead ROCs", ": Inefficient ROCs", ": Mean Occupancy", ": # of Clusters"];
 
-	for (var bxpx in data)
+	for (var bxpx in data.data)
 	{
-		var bxpxData = data[bxpx];
+		var bxpxData = data.data[bxpx];
 
 		for (var moduleName in bxpxData) //gets for example TEC+ DISK 7
 	    {
@@ -97,19 +101,44 @@ function getChartDataRepresentation(data, options)
 			var vals = [[], [], [], []];
 			for (var runNum in runsArr)
 			{
-				if ($.inArray(runNum, labels) === -1)
+				if (is_runByRunOn)
 				{
-					labels.push(runNum);
-				} 
+					if ($.inArray(runNum, labels) === -1)
+					{
+						labels.push(runNum);
+					}
+				}
+				else
+				{
+					if ($.inArray(runNum + ".00000", labels) === -1)
+					{
+						for (var lumi = 0; lumi < data.runInfo[runNum].lbs; ++lumi)
+						{
+							labels.push(runNum + "." + intToStrWithLeadingZeros(lumi));
+						}
+					} 
+				}
 
 			    var allVals = runsArr[runNum];
 			    for (var i = 0; i < allVals.length; ++i)
 			    {
 			    	if (allVals[i] != -1)
 			    	{
-			    		vals[i].push({x : runNum,
-			    					  y : allVals[i],
-			    					 });
+			    		if (is_runByRunOn)
+			    		{
+			    			vals[i].push({x : runNum,
+				    					  y : allVals[i],
+				    					 });
+			    		}
+			    		else
+			    		{
+			    			for (var lumi = 0; lumi < data.runInfo[runNum].lbs; ++lumi)
+							{
+								vals[i].push({x : runNum + "." + intToStrWithLeadingZeros(lumi),
+					    					  y : allVals[i],
+					    					 });
+							}
+			    		}
 			    	}
 			    }
 			    cnt++;
@@ -139,16 +168,18 @@ function getChartDataRepresentation(data, options)
 	    }
 	}
 
+	// console.log("Labels:\n" + labels.sort());
+
     return { labels : labels.sort(),
     		 datasets : datasets,
 			}
 }
 
-function CreatePlot(data)
+function CreatePlot(data, is_runByRunOn)
 {
 	console.log(data);
 
-	chartDataRepresentation = (getChartDataRepresentation(data, null))
+	chartDataRepresentation = (getChartDataRepresentation(data, is_runByRunOn, null))
 	
 	if (thisPlotContext == null)
 	{
@@ -202,6 +233,11 @@ function CreatePlot(data)
 		   //                      },
 		   //                  },
 		   //                  footerFontStyle: 'normal'
+		   			callbacks:{
+		   				title: function(e, d){				// makes tooltip title different than scale label
+		   					return d.labels[e[0].index ];
+		   				}
+		   			},
 				},
                 scales: {
                     xAxes: [{
@@ -212,7 +248,12 @@ function CreatePlot(data)
                             fontSize : 24,
                             
                             // id: "x-axis-2",
-                        }
+                        },
+                        ticks:{
+                        	userCallback: function(value, index, values){
+                        		return value.split(".")[0];
+                        	}
+                        },
                     }],
                     yAxes: linearScaleOptions,
                 },
@@ -222,7 +263,7 @@ function CreatePlot(data)
 	else{
 		console.log("Reusing existing chart...");
 		thisChart.config.data = chartDataRepresentation;
-		thisChart.config.options.title.text = "Merged bad Modules for runs: " + chartDataRepresentation.labels[0] + " - " + chartDataRepresentation.labels[chartDataRepresentation.labels.length - 1];
+		thisChart.config.options.title.text = "Merged bad Modules for runs: " + chartDataRepresentation.labels[0].split(".")[0] + " - " + chartDataRepresentation.labels[chartDataRepresentation.labels.length - 1].split(".")[0];
 
 		thisChart.resetZoom();
 		thisChart.update();	

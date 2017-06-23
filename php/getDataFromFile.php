@@ -159,6 +159,8 @@ function traverseDirectories($start, $end, $is_searchbyrun, $query, $modulesToMo
 					"STR" => array(),
 					"PX" => array());
 
+	$runDic = array();
+
 	$BASEPATH = "/data/users/event_display/";
 
 	$YEARLOW = 2016;
@@ -184,8 +186,8 @@ function traverseDirectories($start, $end, $is_searchbyrun, $query, $modulesToMo
 	$commandOutput = str_replace("u'data'", "\"data\"", $commandOutput);
 	$commandOutput = json_decode($commandOutput, true);
 
-	// echo var_dump($commandOutput);
-	// echo var_dump($commandOutput);
+	// echo "This DB Data:\n".var_dump($commandOutput);
+	// echo json_encode($commandOutput);
 	// return;
 
 	$pixelConnectionDic = array(
@@ -222,8 +224,19 @@ function traverseDirectories($start, $end, $is_searchbyrun, $query, $modulesToMo
 	for($runNum = intval($start); $runNum <= intval($end); $runNum++)
 	// foreach ($commandOutput["data"] as $run)
 	{
+
+		//DB STUFF DEPNDENT
 		// $runNum = $run[0];
+		$runLength = rand(2, 20);//$run[1];
+		$lumiLength = 2;
+
+		////////////////////
+
+
+
 		$runHigh = intval($runNum / 1000);
+
+
 		
 		for ($year = $searchingYearStart; $year <= $YEARHIGH; $year++)
 		{
@@ -243,6 +256,11 @@ function traverseDirectories($start, $end, $is_searchbyrun, $query, $modulesToMo
 
 				$searchingYearStart = $year;
 
+				$runDic[$runNum] = array(
+								"runLength" => $runLength, 
+								"lumiLength" => $lumiLength, 
+								"lbs" => ceil(floatval($runLength) / floatval($lumiLength)));
+
 				break;
 			}
 
@@ -259,10 +277,18 @@ function traverseDirectories($start, $end, $is_searchbyrun, $query, $modulesToMo
 
 				$searchingYearStart = $year;
 
+				$runDic[$runNum] = array(
+								"runLength" => $runLength, 
+								"lumiLength" => $lumiLength, 
+								"lbs" => ceil(floatval($runLength) / floatval($lumiLength)));
+
 				break;
 			}
 		}
 	}
+	return array(
+			"data" => $dataDic,
+			"runInfo" => $runDic);
 	return $dataDic;
 }
 
@@ -290,10 +316,10 @@ function bitsToInt($arr)
 // $MODULESTR = "38/09/";
 // $OPTIONSTR = "3/0";
 
-// $START = "280000";
-// $END = "285010";
+// $START = "297000";
+// $END = "297050";
 // $IS_SEARCHBYRUN = true;
-// $MODULESTR = "59/";
+// $MODULESTR = "59/58";
 // $OPTIONSTR = "6/";
 
 $START = urldecode($_POST['start']);
@@ -334,6 +360,12 @@ if ($MODULESTR != "" && $OPTIONSTR != "")
 	// curl_close($ch);
 
 	// echo $retcode."\n\n\n\n".$data;
+
+	// echo shell_exec("ping http://vocms00169:2113/table/hcal/cond_loader_table_cols");
+	// // echo shell_exec("wget http://vocms00169:2113/table/hcal/cond_loader_table_cols -O -");
+	// echo shell_exec("wget http://vocms00169:2113/table/hcal/cond_loader_table_cols");
+	// echo readfile("cond_loader_table_cols")."\n\n";
+
 	// // echo readfile("array.py")."\n";
 
 	// /////

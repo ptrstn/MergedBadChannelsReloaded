@@ -171,6 +171,8 @@ $(document).ready(function() {
 				query = "where r.starttime between to_date('" + start + "', '" + dateFormat + "') and to_date('" + end + "', '" + dateFormat + "') ";
 			}
 		}
+
+		var is_runByRunOn = $("#careAboutRunLength").parent().hasClass("off");
 	
 
 		console.log("Complete set of parameters:");
@@ -199,7 +201,7 @@ $(document).ready(function() {
 										   optionStr : optionStr}, function(data){
 												$("#plotImages").css("background-image", "");
 
-												CreatePlot(data);
+												CreatePlot(data, is_runByRunOn);
 
 										        $('html, body').animate({
 										            scrollTop: $("#plotContainer").offset().top
