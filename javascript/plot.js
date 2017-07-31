@@ -177,7 +177,7 @@ function getChartDataRepresentation(data, is_runByRunOn, options)
 
 function CreatePlot(data, is_runByRunOn)
 {
-	console.log(data);
+	// console.log(data);
 
 	chartDataRepresentation = (getChartDataRepresentation(data, is_runByRunOn, null))
 	

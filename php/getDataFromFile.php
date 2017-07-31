@@ -1,8 +1,5 @@
 <?php
-/*
-	FOR FILLS: 5837 - 5849
-	RUNS: 296963 - 297219
-*/
+
 function getStripDataFromFile($filename, $currentDictionary, $runNumber, $modulesToMonitor, $options)
 {
 	// DID USER CHOOSE TO LOOK FOR STRIP PLOTS AT ALL
@@ -151,9 +148,84 @@ function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $module
 	return $currentDictionary;
 }
 
+function getUsfulJSON($dbJSON)
+{
+	// echo $dbJSON;
+
+	$commandOutput = str_replace("u'data'", "\"data\"", $dbJSON);
+	// echo $commandOutput;
+
+	// CLEAN STRING
+
+	// This will remove unwanted characters.
+	// Check http://www.php.net/chr for details
+
+	$commandOutput = str_replace("None", 0, $commandOutput);
+
+	for ($i = 0; $i <= 31; ++$i) { 
+	    $commandOutput = str_replace(chr($i), "", $commandOutput); 
+	}
+	$commandOutput = str_replace(chr(127), "", $commandOutput);
+
+	// This is the most common part
+	// Some file begins with 'efbbbf' to mark the beginning of the file. (binary level)
+	// here we detect it and we remove it, basically it's the first 3 characters 
+	if (0 === strpos(bin2hex($commandOutput), 'efbbbf')) {
+	   $commandOutput = substr($commandOutput, 3);
+	}
+
+	// !!!CLEAN STRING
+
+
+	$commandOutput = json_decode($commandOutput, true);
+	// echo "\n\n".var_dump($commandOutput)."\n\n";
+	// echo gettype($commandOutput);
+	
+	switch (json_last_error()) {
+        case JSON_ERROR_NONE:
+            // echo ' - No errors\n';
+        break;
+        case JSON_ERROR_DEPTH:
+            echo ' - Maximum stack depth exceeded\n';
+        break;
+        case JSON_ERROR_STATE_MISMATCH:
+            echo ' - Underflow or the modes mismatch\n';
+        break;
+        case JSON_ERROR_CTRL_CHAR:
+            echo ' - Unexpected control character found\n';
+        break;
+        case JSON_ERROR_SYNTAX:
+            echo ' - Syntax error, malformed JSON\n';
+        break;
+        case JSON_ERROR_UTF8:
+            echo ' - Malformed UTF-8 characters, possibly incorrectly encoded\n';
+        break;
+        default:
+            echo ' - Unknown error\n';
+        break;
+    }
+    // echo "\n\n";
+
+    return $commandOutput;
+}
+
+function getMaxYear(){
+	$command = "python ../python/rhapi.py \"select max(r.starttime) as maxDate from runreg_tracker.runs r where r.runnumber > 300000\" --all -f json";
+
+	$commandOutput = shell_exec($command);
+
+
+	$commandOutput = str_replace("u", "", $commandOutput);
+	$commandOutput = str_replace("'", "\"", $commandOutput);
+
+	$commandOutput = json_decode($commandOutput, true);
+
+	return intval($commandOutput["data"][0][0]);
+}
+
 
 //look
-function traverseDirectories($start, $end, $is_searchbyrun, $query, $modulesToMonitor, $options)
+function traverseDirectories($query, $modulesToMonitor, $options)
 {
 	$dataDic = array(
 					"STR" => array(),
@@ -164,27 +236,17 @@ function traverseDirectories($start, $end, $is_searchbyrun, $query, $modulesToMo
 	$BASEPATH = "/data/users/event_display/";
 
 	$YEARLOW = 2016;
-	$YEARHIGH = 2017;
+	$YEARHIGH = getMaxYear();
 
 	$searchingYearStart = $YEARLOW;
 
 	$COMMANDBASE = "python ../python/rhapi.py \"select r.runnumber, r.duration from runreg_tracker.runs r ";
-	$COMMANDAPPENDIX = " -f json";
-	$currCommand = "";
+	$COMMANDAPPENDIX = "\" --all -f json";
 
-	if ($is_searchbyrun)
-	{
-		$currCommand = $COMMANDBASE."where r.runnumber between $start and $end\"".$COMMANDAPPENDIX;
-	}
-	else
-	{
-		$currCommand = $COMMANDBASE."where r.starttime between to_date('$start', 'dd/mm/yyyy') and to_date('$end', 'dd/mm/yyyy')\"".$COMMANDAPPENDIX;
-	}
-
+	$currCommand = $COMMANDBASE.$query.$COMMANDAPPENDIX;
 	// echo $currCommand."\n";
-	$commandOutput = shell_exec($currCommand);
-	$commandOutput = str_replace("u'data'", "\"data\"", $commandOutput);
-	$commandOutput = json_decode($commandOutput, true);
+	$commandOutput = getUsfulJSON(shell_exec($currCommand));
+
 
 	// echo "This DB Data:\n".var_dump($commandOutput);
 	// echo json_encode($commandOutput);
@@ -218,32 +280,27 @@ function traverseDirectories($start, $end, $is_searchbyrun, $query, $modulesToMo
 						"of" => array("Pixel", 60),
 						);
 
-	$customRunArr = array(296963, 296964, 296965, 296966, 296967, 296968, 296969, 296970, 296971, 296972, 296976, 296977, 296978, 296979, 296980, 296982, 297001, 297002, 297003, 297004, 297005, 297006, 297007, 297009, 297010, 297011, 297012, 297013, 297014, 297015, 297016, 297017, 297018, 297019, 297020, 297047, 297048, 297049, 297050, 297051, 297052, 297053, 297054, 297055, 297056, 297057, 297070, 297071, 297072, 297096, 297098, 297099, 297100, 297101, 297102, 297103, 297104, 297106, 297107, 297108, 297109, 297110, 297111, 297112, 297113, 297114, 297119, 297120, 297155, 297156, 297160, 297161, 297162, 297163, 297164, 297166, 297167, 297168, 297169, 297170, 297171, 297172, 297173, 297174, 297175, 297176, 297177, 297178, 297179, 297180, 297181, 297211, 297215, 297218, 297219);
-
-	// foreach ($customRunArr as $runNum) 
-	for($runNum = intval($start); $runNum <= intval($end); $runNum++)
-	// foreach ($commandOutput["data"] as $run)
+	foreach ($commandOutput["data"] as $run)
 	{
 
 		//DB STUFF DEPNDENT
-		// $runNum = $run[0];
-		$runLength = rand(2, 20);//$run[1];
+		$runNum = $run[0];
+		$runLength = ceil($run[1] / 1000.0);
 		$lumiLength = 2;
+		// echo $runNum."\t".$runLength."\n";
 
 		////////////////////
 
-
-
 		$runHigh = intval($runNum / 1000);
 
-
-		
 		for ($year = $searchingYearStart; $year <= $YEARHIGH; $year++)
 		{
 			$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$runNum."/StreamExpress/";
 			
 			$stripFile = "MergedBadComponents_run".$runNum.".txt";
 			$pixelFile = "PixZeroOccROCs_run".$runNum.".txt";
+
+			// echo $currPath."\n";
 
 			if (file_exists($currPath))
 			{
@@ -307,27 +364,16 @@ function bitsToInt($arr)
 	return $outVal;
 }
 
-// $dataDic = traverseDirectories(295643, 295660, $STRIPS, $TRACKER + $TEC3M + $TOB);
-
 //DEBUG MODE ON
-// $START = "15/06/2017";
-// $END = "16/06/2017";
-// $IS_SEARCHBYRUN = false;
 // $MODULESTR = "38/09/";
 // $OPTIONSTR = "3/0";
+// $QUERY = "where r.runnumber between 299000 and 299500 ";
 
-// $START = "297000";
-// $END = "297050";
-// $IS_SEARCHBYRUN = true;
 // $MODULESTR = "59/58";
 // $OPTIONSTR = "6/";
 
-$START = urldecode($_POST['start']);
-$END = urldecode($_POST['end']);
 $MODULESTR = urldecode($_POST['moduleStr']);
 $OPTIONSTR = urldecode($_POST['optionStr']);
-$IS_SEARCHBYRUN = urldecode($_POST['is_searchbyrun'] === 'true');
-
 $QUERY = urldecode($_POST['query']);
 
 if ($MODULESTR != "" && $OPTIONSTR != "")
@@ -340,7 +386,7 @@ if ($MODULESTR != "" && $OPTIONSTR != "")
 
 	// echo $modulesToMonitor."\n".$optionsToMonitor."\n";
 
-	$dataOut = traverseDirectories($START, $END, $IS_SEARCHBYRUN, $QUERY, $modulesToMonitor, $optionsToMonitor );
+	$dataOut = traverseDirectories($QUERY, $modulesToMonitor, $optionsToMonitor );
 
 	// var_dump($dataOut);
 	echo json_encode($dataOut);
@@ -349,47 +395,14 @@ if ($MODULESTR != "" && $OPTIONSTR != "")
 	// echo "SOME TEXT...\n";
 	// echo readfile("http://vocms00169:2113/table/hcal/cond_loader_table_cols")."\n";
 
-	// $ch = curl_init();
-	// curl_setopt($ch, CURLOPT_URL, "http://vocms00169:2113/table/hcal/cond_loader_table_cols");
-	// curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)');
-	// curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	// curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-	// curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-	// $data = curl_exec($ch);
-	// $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	// curl_close($ch);
-
-	// echo $retcode."\n\n\n\n".$data;
-
 	// echo shell_exec("ping http://vocms00169:2113/table/hcal/cond_loader_table_cols");
 	// // echo shell_exec("wget http://vocms00169:2113/table/hcal/cond_loader_table_cols -O -");
 	// echo shell_exec("wget http://vocms00169:2113/table/hcal/cond_loader_table_cols");
 	// echo readfile("cond_loader_table_cols")."\n\n";
 
-	// // echo readfile("array.py")."\n";
-
-	// /////
-
-	// $ch = curl_init();
-	// curl_setopt($ch, CURLOPT_URL, "http://www.ftj.agh.edu.pl/~Lankosz/");
-	// curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; .NET CLR 1.1.4322)');
-	// curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	// curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-	// curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-	// $data = curl_exec($ch);
-	// $retcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	// curl_close($ch);
-
-	// echo $retcode."\n\n\n\n".$data;
-
-
-
-
 }
 else{
 	echo json_encode(NULL);
 }
-
-
 
 ?>

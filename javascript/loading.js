@@ -1,52 +1,61 @@
 $(document).ready(function() {
 
-	// RUN SLIDER
-	var initialSliderValues = [270000, 300000];
-	var minSliderVal = 261370;
-	var maxSliderVal = 320000;
-	var ticks = [];
+	var savedPlots = 0;
 	var dateFormat = "dd/mm/yyyy";
 
-	var savedPlots = 0;
+	$.post("php/maxRunUtil.php", {}, function(data){
+				console.log("CurrMaxRunNum: ");				
+				console.log(data);
 
-	for (i = minSliderVal + 10000; i < maxSliderVal ; i+=10000)
-	{
-		var mainVal = Math.floor(i / 10000) * 10000;
-		ticks.push(mainVal);
-	}
+				// RUN SLIDER
+				var initialSliderValues = [270000, 300000];
+				var minSliderVal = 261370;
+				var maxSliderVal = data + 3000;
+				var ticks = [];
+				var tickStep = 15000;
+				
+				for (i = minSliderVal + tickStep; i < maxSliderVal ; i+=tickStep)
+				{
+					var mainVal = Math.floor(i / tickStep) * tickStep;
+					ticks.push(mainVal);
+				}
 
-	var slider = $("#slider")[0];
-	noUiSlider.create(slider, {
-		start: initialSliderValues,
-		connect: true,
-		step: 1,
-		range: {
-			'min': minSliderVal, // takes into account padding value
-			'max': maxSliderVal
-		},
-		padding: 3000,
+				var slider = $("#slider")[0];
+				noUiSlider.create(slider, {
+					start: initialSliderValues,
+					connect: true,
+					step: 1,
+					range: {
+						'min': minSliderVal, // takes into account padding value
+						'max': maxSliderVal
+					},
+					padding: 3000,
 
-		pips: {
-			mode: 'values',
-			values: ticks,
-			density: 2
-		}
-	});
+					pips: {
+						mode: 'values',
+						values: ticks,
+						density: 2
+					}
+				});
 
-	slider.noUiSlider.on("update", function(values, handle){
-		$("#runMin").val(values[0].substr(0,6));
-		$("#runMax").val(values[1].substr(0,6));
-	});
+				slider.noUiSlider.on("update", function(values, handle){
+					$("#runMin").val(values[0].substr(0,6));
+					$("#runMax").val(values[1].substr(0,6));
+				});
 
-	$("#runMin").val(initialSliderValues[0]);
-	$("#runMax").val(initialSliderValues[1]);
+				$("#runMin").val(initialSliderValues[0]);
+				$("#runMax").val(initialSliderValues[1]);
 
-	$("#runMin").on("change", function(){
-		slider.noUiSlider.set([$(this).val(), null]);
-	});
-	$("#runMax").on("change", function(){
-		slider.noUiSlider.set([null, $(this).val()]);
-	});
+				$("#runMin").on("change", function(){
+					slider.noUiSlider.set([$(this).val(), null]);
+				});
+				$("#runMax").on("change", function(){
+					slider.noUiSlider.set([null, $(this).val()]);
+				});
+
+		   }
+		   , "json"
+    );
 
 	// TOGGLERS
 	$('#runDateToggle').bootstrapToggle('on');
@@ -141,7 +150,6 @@ $(document).ready(function() {
 
 		var start = "";
 		var end = "";
-		var is_searchbyrun = "";
 
 		var is_expertModeOn = $("#expertModeToggle").parent().hasClass("off") == false;
 		var query = "";
@@ -154,8 +162,6 @@ $(document).ready(function() {
 		{
 			if ($("#runDateToggle").parent().hasClass("off") == false)
 			{
-				is_searchbyrun = true;
-
 				start = $(".option-selection #runMin").val();
 				end = $(".option-selection #runMax").val();
 
@@ -163,8 +169,6 @@ $(document).ready(function() {
 			} 
 			else
 			{
-				is_searchbyrun = false;
-
 				start = $("#datepicker #dateStart").val();
 				end = $("#datepicker #dateEnd").val();
 
@@ -174,33 +178,22 @@ $(document).ready(function() {
 
 		var is_runByRunOn = $("#careAboutRunLength").parent().hasClass("off");
 	
-
 		console.log("Complete set of parameters:");
 		console.log("\tmodules: " + moduleStr);
 		console.log("\toptions: " + optionStr);
 		console.log("\tis expert mode one?: " + is_expertModeOn);
 		console.log("\tquery content: " + query);
-		console.log("\tis search by run?: " + is_searchbyrun);
-		console.log("\trun min: " + start);
-		console.log("\trun max: " + end);
 
 		// return;
 
 		$("#plotImages").css("background-image", "url(\"img/magnify.gif\")");
 
-// TODO
-// When Run Registry Querying will start to work make this script send query ONLY
-//
-
-
-		$.post("php/getDataFromFile.php", {start : start,
-										   end : end,
-										   is_searchbyrun : is_searchbyrun,
-										   query : query,
+		$.post("php/getDataFromFile.php", {query : query,
 										   moduleStr : moduleStr,
 										   optionStr : optionStr}, function(data){
 												$("#plotImages").css("background-image", "");
-
+												console.log(data);
+												
 												CreatePlot(data, is_runByRunOn);
 
 										        $('html, body').animate({
