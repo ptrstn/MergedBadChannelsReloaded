@@ -64,6 +64,89 @@ function getStripDataFromFile($filename, $currentDictionary, $runNumber, $module
 	return $currentDictionary;
 }
 
+function getPixelInefficiencyAndNoisynessFromFile($filename, $currentDictionary, $runNumber, $modulesToMonitor, $options, $pixelConnectionDic, $inefficiencyPass)
+{
+	if (($options >> 7) && ($modulesToMonitor >> 42)) // DID USER CHOOSE TO LOOK FOR PIXEL PLOTS AT ALL
+	{
+		$handle = fopen($filename, "r");
+		if ($handle)
+		{
+			$moduleListenMode = true;
+			$elemName = "";
+
+			$moduleValueDic = array();
+
+			while (($line = fgets($handle)) !== false)
+			{
+				$line = trim($line);
+				if (strlen($line) == 0 || $line[0] == "B" || $line[0] == "F") continue;
+
+				if ($moduleListenMode)
+				{
+					$components =  preg_split("/[\s,]+/", $line);
+
+					$elemName = trim($components[1]);
+
+					// if (we need to monitor this object)
+					$moduleListenMode = false;
+				}
+				else
+				{
+					$val = explode(":", $line);
+					$val = intval(trim($val[1]));
+
+					// echo $elemName."xxx\n";
+					// echo $pixelConnectionDic[$elemName][1]."\n";
+
+					if ($modulesToMonitor & (1 << $pixelConnectionDic[$elemName][1]) ||
+						($pixelConnectionDic[$elemName][1] <= 53 && $pixelConnectionDic[$elemName][1] >= 48 && $modulesToMonitor & (1 << ($pixelConnectionDic[$elemName][1] - 6)))) //RING 1 AND 2 COMBINED
+					{
+						// echo $modulesToMonitor;
+						// if(!array_key_exists($pixelConnectionDic[$elemName][0], $currentDictionary["PX"]))
+						if (!$currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber])
+						{
+							if ($inefficiencyPass)
+								$currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber] =  array(-1, -1, -1, -1);
+							else
+								$currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber] =  array(-1, -1, -1, -1, -1);
+
+						}
+						// echo $val."\n";
+						// var_dump($currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber]);
+						if ($inefficiencyPass)
+						{
+							if (($options >> 7) & 1)
+								array_push($currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber], $val);
+							else
+								array_push($currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber], -1);
+						}
+						else
+						{
+							if (($options >> 8) & 1)
+								array_push($currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber], $val);
+							else
+								array_push($currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber], -1);
+						}
+						// var_dump($currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber]);
+						// $vals = $currentDictionary["PX"][$pixelConnectionDic[$elemName][0]][$runNumber];				
+					}
+
+					// $moduleValueDic[$elemName] = $val;
+
+					$moduleListenMode = true;
+
+
+				}
+
+			}
+		}
+		else {
+		    echo "The file: ".$filename." does not exist!";
+		}
+	}
+	return $currentDictionary;
+}
+
 function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $modulesToMonitor, $options, $pixelConnectionDic)
 {
 	if (($options >> 4) && ($modulesToMonitor >> 42)) // DID USER CHOOSE TO LOOK FOR PIXEL PLOTS AT ALL
@@ -117,6 +200,7 @@ function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $module
 		    						array_push($valArr, -1);
 		    					}
 							}
+							array_push($valArr, -1); // to make the length of this array equal in all DeadROCs cases
 						}
 						
 						$rubbish = true;
@@ -279,6 +363,36 @@ function traverseDirectories($query, $modulesToMonitor, $options)
 
 						"of" => array("Pixel", 60),
 						);
+	$pixelConnectionDicForInefficiencyAndNoisyness = array(
+						"B1" => array("Barrel Layer 1", 58),
+						"B2" => array("Barrel Layer 2", 57),
+						"B3" => array("Barrel Layer 3", 56),
+						"B4" => array("Barrel Layer 4", 55),
+						// "tot0" => array("Barrel Total", 59),
+
+						"F-3" => array("Disk- 3", 51),
+						"F-2" => array("Disk- 2", 52),
+						"F-1" => array("Disk- 1", 53),
+
+						"F1" => array("Disk 1", 50),
+						"F2" => array("Disk 2", 49),
+						"F3" => array("Disk 3", 48),
+
+						// "F-3" => array("Ring 2 Disk- 3", 45),
+						// "F-2" => array("Ring 2 Disk- 2", 46),
+						// "F-1" => array("Ring 2 Disk- 1", 47),
+
+						// "F1" => array("Ring 2 Disk 1", 44),
+						// "F2" => array("Ring 2 Disk 2", 43),
+						// "F3" => array("Ring 2 Disk 3", 42),
+
+						// "tot1" => array("Endcap Total", 54),
+
+						// "of" => array("Pixel", 60),
+						);
+
+	$pixelInefficientDColsFile = "inefficientDPixelColumns.txt";
+	$pixelNoisyColumnsFile = "noisyPixelColumns.txt";
 
 	foreach ($commandOutput["data"] as $run)
 	{
@@ -298,7 +412,7 @@ function traverseDirectories($query, $modulesToMonitor, $options)
 			$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$runNum."/StreamExpress/";
 			
 			$stripFile = "MergedBadComponents_run".$runNum.".txt";
-			$pixelFile = "PixZeroOccROCs_run".$runNum.".txt";
+			$pixelMainFile = "PixZeroOccROCs_run".$runNum.".txt";
 
 			// echo $currPath."\n";
 
@@ -308,8 +422,14 @@ function traverseDirectories($query, $modulesToMonitor, $options)
 				if (file_exists($currPath.$stripFile))
 					$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $runNum, $modulesToMonitor, $options);
 
-				if (file_exists($currPath.$pixelFile))
-					$dataDic = getPixelDataFromFile($currPath.$pixelFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDic);
+				if (file_exists($currPath.$pixelMainFile))
+					$dataDic = getPixelDataFromFile($currPath.$pixelMainFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDic);
+
+				if (file_exists($currPath.$pixelInefficientDColsFile))
+					$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelInefficientDColsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, true);
+
+				if (file_exists($currPath.$pixelNoisyColumnsFile))
+					$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelNoisyColumnsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, false);
 
 				$searchingYearStart = $year;
 
@@ -329,8 +449,14 @@ function traverseDirectories($query, $modulesToMonitor, $options)
 				if (file_exists($currPath.$stripFile))
 					$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $runNum, $modulesToMonitor, $options);
 
-				if (file_exists($currPath.$pixelFile))
-					$dataDic = getPixelDataFromFile($currPath.$pixelFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDic);
+				if (file_exists($currPath.$pixelMainFile))
+					$dataDic = getPixelDataFromFile($currPath.$pixelMainFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDic);
+
+				if (file_exists($currPath.$pixelInefficientDColsFile))
+					$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelInefficientDColsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, true);
+
+				if (file_exists($currPath.$pixelNoisyColumnsFile))
+					$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelNoisyColumnsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, false);
 
 				$searchingYearStart = $year;
 
@@ -367,10 +493,10 @@ function bitsToInt($arr)
 //DEBUG MODE ON
 // $MODULESTR = "38/09/";
 // $OPTIONSTR = "3/0";
-// $QUERY = "where r.runnumber between 299000 and 299500 ";
+// $QUERY = "where r.runnumber between 299700 and 300000 ";
 
-// $MODULESTR = "59/58";
-// $OPTIONSTR = "6/";
+// $MODULESTR = "51";
+// $OPTIONSTR = "7/";
 
 $MODULESTR = urldecode($_POST['moduleStr']);
 $OPTIONSTR = urldecode($_POST['optionStr']);

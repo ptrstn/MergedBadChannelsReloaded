@@ -79,14 +79,29 @@ function getRandomColorFromTable()
 	return contrastingColors[val];
 }
 
-function getChartDataRepresentation(data, is_runByRunOn, options)
+function sortData(a, b)
+{
+	return a.x - b.x;
+}
+
+function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options)
 {
 	var labels = [];
 	var datasets = [];
 
 	// maybe better would be to grab it from $().innerhtml
 	var strOptionStr = [": Modules", ": Fibers" , ": APVs" , ": Strips"];
-	var pxoptionStr = [": Dead ROCs", ": Inefficient ROCs", ": Mean Occupancy", ": # of Clusters"];
+	var pxoptionStr = [": Dead ROCs", ": Inefficient ROCs", ": Mean Occupancy", ": # of Clusters", ": # of Inefficient DCols", ": # of Noisy Pixel Columns"];
+
+	var superimposedDataset = {label : "",
+								data : [],
+								borderWidth: 4,
+				            	// borderColor: generateRandomColor(),
+				            	borderColor: getRandomColorFromTable(),
+				            	fill: true,
+				            	steppedLine: true,
+				            	// cubicInterpolationMode: 'monotone',
+				            	pointHoverBorderWidth : 10};
 
 	for (var bxpx in data.data)
 	{
@@ -98,7 +113,7 @@ function getChartDataRepresentation(data, is_runByRunOn, options)
 			
 			var cnt = 0;
 
-			var vals = [[], [], [], []];
+			var vals = [[], [], [], [], [], []];
 			for (var runNum in runsArr)
 			{
 				if (is_runByRunOn)
@@ -150,36 +165,88 @@ function getChartDataRepresentation(data, is_runByRunOn, options)
 			{
 				if (vals[i].length)
 				{
-					datasets.push({
-						label : moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]),
-						data : vals[i],
-						borderWidth: 3,
-		            	// borderColor: generateRandomColor(),
-		            	borderColor: getRandomColorFromTable(),
-		            	fill: false,
-		            	steppedLine: true,
 
-		            	pointHoverBorderWidth : 10,
+					if (is_superimpose && datasets.length != 0) 
+					{
+						var dataSum = superimposedDataset.data;
+						var labelSum = superimposedDataset.label;
+						// console.log(dataSum);
 
-		            	// xAxisID: "x-axis-2",
-					})
+						// vals[i] = vals[i].sort(sortData);
+						// for (var j = 0; j < dataSum.length && j < vals[i].length; ++j)
+						// {
+						// 	// console.log(vals[i][j].x);
+						// 	if (dataSum[j].x == vals[i][j].x)
+						// 		dataSum[j].y += vals[i][j].y;
+						// }
+						// console.log(vals[i]);
+						xs = vals[i].map(function(v){return v.x;});
+						console.log(xs);
+						for (j in dataSum)
+						{
+							// d = vals[i].find(v => v.x === data.x);
+							// if (d === undefined) continue;
+
+							d = xs.indexOf(superimposedDataset.data[j].x);
+
+							// console.log(data);
+							if (d == -1) continue;
+							superimposedDataset.data[j].y += vals[i][d].y;
+						}
+
+						labelSum = labelSum + " + " + (moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]));
+
+						superimposedDataset.label = labelSum;
+						superimposedDataset.data = dataSum;
+						// console.log(dataSum);
+					}
+					else if (is_superimpose && datasets.length == 0)
+					{
+						superimposedDataset.label = moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]);
+						for (var j = 0; j < vals[i].length; ++j)
+						{
+							superimposedDataset.data.push({x : vals[i][j].x,
+														y : vals[i][j].y});
+						}
+						// superimposedDataset.data = superimposedDataset.data.sort(sortData);
+						// superimposedDataset.data = vals[i].slice(0);
+					}
+					// else
+					{
+						datasets.push({
+							label : moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]),
+							data : vals[i],
+							borderWidth: 2,
+			            	// borderColor: generateRandomColor(),
+			            	borderColor: getRandomColorFromTable(),
+			            	fill: false,
+			            	steppedLine: true,
+
+			            	pointHoverBorderWidth : 10,
+
+			            	// xAxisID: "x-axis-2",
+						})
+					}
 				}
 			}
 	    }
 	}
+	if (is_superimpose && datasets.length > 1)
+	{
+		datasets.push(superimposedDataset);
+	}
 
 	// console.log("Labels:\n" + labels.sort());
-
     return { labels : labels.sort(),
     		 datasets : datasets,
 			}
 }
 
-function CreatePlot(data, is_runByRunOn)
+function CreatePlot(data, is_runByRunOn, is_superimpose)
 {
 	// console.log(data);
 
-	chartDataRepresentation = (getChartDataRepresentation(data, is_runByRunOn, null))
+	chartDataRepresentation = (getChartDataRepresentation(data, is_runByRunOn, is_superimpose, null))
 	
 	if (thisPlotContext == null)
 	{

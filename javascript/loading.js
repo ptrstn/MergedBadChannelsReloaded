@@ -115,7 +115,7 @@ $(document).ready(function() {
 		thisChart.resetZoom();
 	});
 
-	$("#careAboutRunLength").on('change', function()
+	$("#careAboutRunLength, #superimposeData").on('change', function()
 	{
 		$("#plotImages").click();
 	});
@@ -177,11 +177,12 @@ $(document).ready(function() {
 		}
 
 		var is_runByRunOn = $("#careAboutRunLength").parent().hasClass("off");
+		var is_superimpose = !$("#superimposeData").parent().hasClass("off");
 	
 		console.log("Complete set of parameters:");
 		console.log("\tmodules: " + moduleStr);
 		console.log("\toptions: " + optionStr);
-		console.log("\tis expert mode one?: " + is_expertModeOn);
+		console.log("\tis expert mode on?: " + is_expertModeOn);
 		console.log("\tquery content: " + query);
 
 		// return;
@@ -194,7 +195,7 @@ $(document).ready(function() {
 												$("#plotImages").css("background-image", "");
 												console.log(data);
 												
-												CreatePlot(data, is_runByRunOn);
+												CreatePlot(data, is_runByRunOn, is_superimpose);
 
 										        $('html, body').animate({
 										            scrollTop: $("#plotContainer").offset().top
