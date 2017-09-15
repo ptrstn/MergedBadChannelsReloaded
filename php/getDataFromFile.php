@@ -232,6 +232,28 @@ function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $module
 	return $currentDictionary;
 }
 
+function getMinMaxDataFromFile($thePath, $currentDictionary, $runNumber, $minmaxOptionStr, $minmaxDetIDFilter)
+{
+	$command = "python ../python/minmaxFileParser.py $thePath $minmaxOptionStr $minmaxDetIDFilter";
+
+	$commandOutput = shell_exec($command);
+	$commandOutput = json_decode($commandOutput, true); #SO NOW WE HAVE THE DICTIONARY MADE IN PYTHON
+
+	// var_dump($commandOutput);
+
+	foreach ($commandOutput as $det => $characteristics)
+	{
+		foreach($characteristics as $name => $val)
+		{
+			$currentDictionary[$det][$name][$runNumber] = $val;
+		}
+		// $currentDictionary[$det]["ABC"][$runNumber] = 2;
+		// echo $det."\n";
+	}
+
+	return $currentDictionary;
+}
+
 function getUsfulJSON($dbJSON)
 {
 	// echo $dbJSON;
@@ -309,7 +331,8 @@ function getMaxYear(){
 
 
 //look
-function traverseDirectories($query, $modulesToMonitor, $options)
+function traverseDirectories($query, $modulesToMonitor, $options,
+							 		 $minmaxOptionStr, $minmaxDetIDFilter)
 {
 	$dataDic = array(
 					"STR" => array(),
@@ -431,6 +454,9 @@ function traverseDirectories($query, $modulesToMonitor, $options)
 				if (file_exists($currPath.$pixelNoisyColumnsFile))
 					$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelNoisyColumnsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, false);
 
+				#MINMAX TREND DATA
+				$dataDic = getMinMaxDataFromFile($currPath, $dataDic, $runNum, $minmaxOptionStr, $minmaxDetIDFilter);
+
 				$searchingYearStart = $year;
 
 				$runDic[$runNum] = array(
@@ -457,6 +483,9 @@ function traverseDirectories($query, $modulesToMonitor, $options)
 
 				if (file_exists($currPath.$pixelNoisyColumnsFile))
 					$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelNoisyColumnsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, false);
+
+				#MINMAX TREND DATA
+				$dataDic = getMinMaxDataFromFile($currPath, $dataDic, $runNum, $minmaxOptionStr, $minmaxDetIDFilter);
 
 				$searchingYearStart = $year;
 
@@ -495,14 +524,20 @@ function bitsToInt($arr)
 // $OPTIONSTR = "3/0";
 // $QUERY = "where r.runnumber between 299700 and 300000 ";
 
-// $MODULESTR = "51";
-// $OPTIONSTR = "7/";
+// $MODULESTR = "";
+// $OPTIONSTR = "";
+
+// $MINMAXOPTIONSTR = "NumberOfCluster-max/NumberOfOfffTrackCluster-max/size-max";
+// $MINMAXDETIDFILTER = "-1";
 
 $MODULESTR = urldecode($_POST['moduleStr']);
 $OPTIONSTR = urldecode($_POST['optionStr']);
 $QUERY = urldecode($_POST['query']);
 
-if ($MODULESTR != "" && $OPTIONSTR != "")
+$MINMAXOPTIONSTR =  urldecode($_POST['minmaxOptionStr']);
+$MINMAXDETIDFILTER = urldecode($_POST['minmaxDetIDFilter']);
+
+if (($MODULESTR != "" && $OPTIONSTR != "") || $MINMAXOPTIONSTR != "")
 {
 	$modulesExploded = explode("/", $MODULESTR);
 	$optionsExploded = explode("/", $OPTIONSTR);
@@ -510,9 +545,13 @@ if ($MODULESTR != "" && $OPTIONSTR != "")
 	$modulesToMonitor = bitsToInt($modulesExploded);
 	$optionsToMonitor = bitsToInt($optionsExploded);
 
+	$minmaxDetIDFilter = -1;
+	if ($MINMAXDETIDFILTER !== "") $minmaxDetIDFilter = intval($MINMAXDETIDFILTER);
+
 	// echo $modulesToMonitor."\n".$optionsToMonitor."\n";
 
-	$dataOut = traverseDirectories($QUERY, $modulesToMonitor, $optionsToMonitor );
+	$dataOut = traverseDirectories($QUERY, $modulesToMonitor, $optionsToMonitor,
+											$MINMAXOPTIONSTR, $minmaxDetIDFilter );
 
 	// var_dump($dataOut);
 	echo json_encode($dataOut);

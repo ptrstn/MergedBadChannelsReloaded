@@ -84,6 +84,21 @@ function sortData(a, b)
 	return a.x - b.x;
 }
 
+function convertMinmaxModuleNameIntoLabel(moduleName)
+{
+	var tmpName = moduleName.substr(1);
+	var tmpNameArr = tmpName.split(" ");
+	tmpName = $("#" + tmpNameArr[1] + "-title").html();
+
+	var filterID = $.trim($("#minmax-selection-filterArea #minmaxDetIDFilter").val());
+
+	if (filterID !== "")
+	{
+		return "Among " + tmpNameArr[0] + " " + tmpName + " (" + filterID + ")";
+	}
+	return tmpNameArr[0] + " " + tmpName;
+}
+
 function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options)
 {
 	var labels = [];
@@ -110,7 +125,6 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 		for (var moduleName in bxpxData) //gets for example TEC+ DISK 7
 	    {
 			var runsArr = bxpxData[moduleName];
-			
 			var cnt = 0;
 
 			var vals = [[], [], [], [], [], []];
@@ -135,27 +149,49 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 				}
 
 			    var allVals = runsArr[runNum];
-			    for (var i = 0; i < allVals.length; ++i)
+
+			    if (moduleName.startsWith("!"))
 			    {
-			    	if (allVals[i] != -1)
+			    	if (is_runByRunOn)
 			    	{
-			    		if (is_runByRunOn)
-			    		{
-			    			vals[i].push({x : runNum,
-				    					  y : allVals[i],
+			    		vals[0].push({x : runNum,
+					    			  y : runsArr[runNum],
+					    		      });
+			    	}
+			    	else
+			    	{
+	    				for (var lumi = 0; lumi < data.runInfo[runNum].lbs; ++lumi)
+						{
+							vals[0].push({x : runNum + "." + intToStrWithLeadingZeros(lumi),
+				    					  y : runsArr[runNum],
 				    					 });
-			    		}
-			    		else
-			    		{
-			    			for (var lumi = 0; lumi < data.runInfo[runNum].lbs; ++lumi)
-							{
-								vals[i].push({x : runNum + "." + intToStrWithLeadingZeros(lumi),
+						}
+			    	}
+			    }	
+			    else
+			    {
+				    for (var i = 0; i < allVals.length; ++i)
+				    {
+				    	if (allVals[i] != -1)
+				    	{
+				    		if (is_runByRunOn)
+				    		{
+				    			vals[i].push({x : runNum,
 					    					  y : allVals[i],
 					    					 });
-							}
-			    		}
-			    	}
-			    }
+				    		}
+				    		else
+				    		{
+				    			for (var lumi = 0; lumi < data.runInfo[runNum].lbs; ++lumi)
+								{
+									vals[i].push({x : runNum + "." + intToStrWithLeadingZeros(lumi),
+						    					  y : allVals[i],
+						    					 });
+								}
+				    		}
+				    	}
+				    }
+				}
 			    cnt++;
 			}
 			console.log("Current dataset length: " + cnt);
@@ -194,7 +230,14 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 							superimposedDataset.data[j].y += vals[i][d].y;
 						}
 
-						labelSum = labelSum + " + " + (moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]));
+						if (moduleName.startsWith("!"))
+						{
+							labelSum += " + " + convertMinmaxModuleNameIntoLabel(moduleName);
+						}
+						else
+						{
+							labelSum += " + " + (moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]));
+						}
 
 						superimposedDataset.label = labelSum;
 						superimposedDataset.data = dataSum;
@@ -202,7 +245,15 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 					}
 					else if (is_superimpose && datasets.length == 0)
 					{
-						superimposedDataset.label = moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]);
+						if (moduleName.startsWith("!"))
+						{
+							superimposedDataset.label = convertMinmaxModuleNameIntoLabel(moduleName);
+						}
+						else
+						{						
+							superimposedDataset.label = moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]);							
+						}
+
 						for (var j = 0; j < vals[i].length; ++j)
 						{
 							superimposedDataset.data.push({x : vals[i][j].x,
@@ -213,8 +264,16 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 					}
 					// else
 					{
+						var currentLabel = "";
+						if (moduleName.startsWith("!"))
+						{
+							currentLabel = convertMinmaxModuleNameIntoLabel(moduleName);
+						}
+						else{
+							currentLabel = moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]);
+						}
 						datasets.push({
-							label : moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]),
+							label : currentLabel,
 							data : vals[i],
 							borderWidth: 2,
 			            	// borderColor: generateRandomColor(),

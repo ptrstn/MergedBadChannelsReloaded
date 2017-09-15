@@ -53,7 +53,7 @@
 	height: initial;
 }
 
-.module-selection, .option-selection{
+.module-selection, .minmaxPanel, .option-selection{
 	box-shadow: 3px 3px 5px #AAAAAA;
 }
 
@@ -111,6 +111,11 @@ hr{
 	display: initial;
 }
 
+#runRangePicker input{
+	max-width: 90%;
+	text-align: center;
+}
+
 #datePicker{
 	display: none;
 	padding-top: 10px;
@@ -161,4 +166,54 @@ hr{
 
 	display: none;
 
+}
+
+#stripTab div[class^="col-md-"],
+#spixelTab div[class^="col-md-"]{
+	padding-right: 8px;
+	padding-left: 8px;
+}
+
+.panel-footer{
+	-webkit-box-shadow: inset 2px 60px 100px -40px rgba(0,0,0,0.1);
+	-moz-box-shadow: inset 2px 60px 100px -40px rgba(0,0,0,0.1);
+	box-shadow: inset 2px 60px 100px -40px rgba(0,0,0,0.1);
+}
+
+.panel-footer label{
+	margin: 8px 15px;
+}
+
+.panel-footer label > input{
+	margin: 0 8px;
+}
+
+/*
+	MINMAX SELECTION
+*/
+
+#minmax-selection label{
+	margin-right: unset;
+}
+
+#minmax-selection .row > .col-md-12{
+	font-size: 24px;
+	border-top: 2px solid #2e6da4;
+	border-bottom: 2px solid #2e6da4;
+	text-align: center;
+}
+
+#minmax-selection .row > .col-md-8{
+	font-weight: bold;
+	text-align: right;
+}
+
+#minmax-selection .row > .col-md-2{
+	font-weight: bold;
+	text-align: center;
+}
+
+#minmax-selection #minmax-selection-filterArea input{
+	width: 100%;
+	text-align: center;
 }
