@@ -131,8 +131,8 @@ $(document).ready(function() {
 
 	// MINMAX SELECTION BUILDER
 	var minmaxSeleectionArr = {"Strip" :
-								{"NumberOfCluster" : "# clusters",
-							   	"NumberOfDigi" : "# digis",
+								{"NumberOfCluster" : "# strip clusters",
+							   	"NumberOfDigi" : "# strip digis",
 							   	"NumberOfOfffTrackCluster" : "# off track clusters",
 							   	"StoNCorrOnTrack" : "S/N correlation on track",
 							   	"ResidualsMean" : "Residuals Mean"},
@@ -142,8 +142,8 @@ $(document).ready(function() {
 							   {"adc" : "ADC",
 							   "charge" : "Charge",
 							   "size" : "Size",
-							   "num_clusters" : "# clusters",
-							   "num_digis" : "# digis",
+							   "num_clusters" : "# pixel clusters",
+							   "num_digis" : "# pixel digis",
 							   
 							   "Tsize" : "Track size",
 							   "Tcharge" : "Track charge",
@@ -290,12 +290,14 @@ $(document).ready(function() {
 
 		var is_runByRunOn = $("#careAboutRunLength").parent().hasClass("off");
 		var is_superimpose = !$("#superimposeData").parent().hasClass("off");
+		var is_beamData = $("#beam-cosmics-switch").parent().hasClass("off");
 	
 		console.log("Complete set of parameters:");
 		console.log("\tmodules: " + moduleStr);
 		console.log("\toptions: " + optionStr);
 		console.log("\tis expert mode on?: " + is_expertModeOn);
 		console.log("\tquery content: " + query);
+		console.log("\tis beam data on?: " + is_beamData);
 
 		// return;
 
@@ -306,7 +308,9 @@ $(document).ready(function() {
 										   optionStr : optionStr,
 
 										   minmaxOptionStr : minmaxOptionStr,
-										   minmaxDetIDFilter : minmaxDetIDFilter
+										   minmaxDetIDFilter : minmaxDetIDFilter,
+
+										   beamDataOn : is_beamData ? 1 : 0
 										   }, function(data){
 												$("#plotImages").css("background-image", "");
 												console.log(data);

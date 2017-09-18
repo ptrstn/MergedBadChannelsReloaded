@@ -188,6 +188,10 @@ hr{
 	margin: 0 8px;
 }
 
+.panel .panel-body div[id$='OptionSelection'] input{
+	margin: 0 7px;
+}
+
 /*
 	MINMAX SELECTION
 */

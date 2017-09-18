@@ -332,7 +332,8 @@ function getMaxYear(){
 
 //look
 function traverseDirectories($query, $modulesToMonitor, $options,
-							 		 $minmaxOptionStr, $minmaxDetIDFilter)
+							 		 $minmaxOptionStr, $minmaxDetIDFilter,
+							 		 $beamDataOn)
 {
 	$dataDic = array(
 					"STR" => array(),
@@ -432,69 +433,72 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 
 		for ($year = $searchingYearStart; $year <= $YEARHIGH; $year++)
 		{
-			$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$runNum."/StreamExpress/";
-			
 			$stripFile = "MergedBadComponents_run".$runNum.".txt";
 			$pixelMainFile = "PixZeroOccROCs_run".$runNum.".txt";
 
-			// echo $currPath."\n";
-
-			if (file_exists($currPath))
+			if ($beamDataOn)
 			{
-				// echo $currPath."\n";
-				if (file_exists($currPath.$stripFile))
-					$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $runNum, $modulesToMonitor, $options);
-
-				if (file_exists($currPath.$pixelMainFile))
-					$dataDic = getPixelDataFromFile($currPath.$pixelMainFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDic);
-
-				if (file_exists($currPath.$pixelInefficientDColsFile))
-					$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelInefficientDColsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, true);
-
-				if (file_exists($currPath.$pixelNoisyColumnsFile))
-					$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelNoisyColumnsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, false);
-
-				#MINMAX TREND DATA
-				$dataDic = getMinMaxDataFromFile($currPath, $dataDic, $runNum, $minmaxOptionStr, $minmaxDetIDFilter);
-
-				$searchingYearStart = $year;
-
-				$runDic[$runNum] = array(
-								"runLength" => $runLength, 
-								"lumiLength" => $lumiLength, 
-								"lbs" => ceil(floatval($runLength) / floatval($lumiLength)));
-
-				break;
-			}
-
-			$currPath = $BASEPATH."Data".$year."/Cosmics/".$runHigh."/".$runNum."/StreamExpressCosmics/";
+				$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$runNum."/StreamExpress/";
 			
-			if (file_exists($currPath))
-			{
 				// echo $currPath."\n";
-				if (file_exists($currPath.$stripFile))
-					$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $runNum, $modulesToMonitor, $options);
 
-				if (file_exists($currPath.$pixelMainFile))
-					$dataDic = getPixelDataFromFile($currPath.$pixelMainFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDic);
+				if (file_exists($currPath))
+				{
+					// echo $currPath."\n";
+					if (file_exists($currPath.$stripFile))
+						$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $runNum, $modulesToMonitor, $options);
 
-				if (file_exists($currPath.$pixelInefficientDColsFile))
-					$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelInefficientDColsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, true);
+					if (file_exists($currPath.$pixelMainFile))
+						$dataDic = getPixelDataFromFile($currPath.$pixelMainFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDic);
 
-				if (file_exists($currPath.$pixelNoisyColumnsFile))
-					$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelNoisyColumnsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, false);
+					if (file_exists($currPath.$pixelInefficientDColsFile))
+						$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelInefficientDColsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, true);
 
-				#MINMAX TREND DATA
-				$dataDic = getMinMaxDataFromFile($currPath, $dataDic, $runNum, $minmaxOptionStr, $minmaxDetIDFilter);
+					if (file_exists($currPath.$pixelNoisyColumnsFile))
+						$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelNoisyColumnsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, false);
 
-				$searchingYearStart = $year;
+					#MINMAX TREND DATA
+					if ($minmaxOptionStr !== "")
+						$dataDic = getMinMaxDataFromFile($currPath, $dataDic, $runNum, $minmaxOptionStr, $minmaxDetIDFilter);
 
-				$runDic[$runNum] = array(
-								"runLength" => $runLength, 
-								"lumiLength" => $lumiLength, 
-								"lbs" => ceil(floatval($runLength) / floatval($lumiLength)));
+					$searchingYearStart = $year;
 
-				break;
+					$runDic[$runNum] = array(
+									"runLength" => $runLength, 
+									"lumiLength" => $lumiLength, 
+									"lbs" => ceil(floatval($runLength) / floatval($lumiLength)));
+				}
+			}
+			else
+			{
+				$currPath = $BASEPATH."Data".$year."/Cosmics/".$runHigh."/".$runNum."/StreamExpressCosmics/";
+				
+				if (file_exists($currPath))
+				{
+					// echo $currPath."\n";
+					if (file_exists($currPath.$stripFile))
+						$dataDic = getStripDataFromFile($currPath.$stripFile, $dataDic, $runNum, $modulesToMonitor, $options);
+
+					if (file_exists($currPath.$pixelMainFile))
+						$dataDic = getPixelDataFromFile($currPath.$pixelMainFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDic);
+
+					if (file_exists($currPath.$pixelInefficientDColsFile))
+						$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelInefficientDColsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, true);
+
+					if (file_exists($currPath.$pixelNoisyColumnsFile))
+						$dataDic = getPixelInefficiencyAndNoisynessFromFile($currPath.$pixelNoisyColumnsFile, $dataDic, $runNum, $modulesToMonitor, $options, $pixelConnectionDicForInefficiencyAndNoisyness, false);
+
+					#MINMAX TREND DATA
+					if ($minmaxOptionStr !== "")
+						$dataDic = getMinMaxDataFromFile($currPath, $dataDic, $runNum, $minmaxOptionStr, $minmaxDetIDFilter);
+
+					$searchingYearStart = $year;
+
+					$runDic[$runNum] = array(
+									"runLength" => $runLength, 
+									"lumiLength" => $lumiLength, 
+									"lbs" => ceil(floatval($runLength) / floatval($lumiLength)));
+				}
 			}
 		}
 	}
@@ -537,6 +541,8 @@ $QUERY = urldecode($_POST['query']);
 $MINMAXOPTIONSTR =  urldecode($_POST['minmaxOptionStr']);
 $MINMAXDETIDFILTER = urldecode($_POST['minmaxDetIDFilter']);
 
+$BEAMDATAON = intval(urldecode($_POST['beamDataOn']));
+
 if (($MODULESTR != "" && $OPTIONSTR != "") || $MINMAXOPTIONSTR != "")
 {
 	$modulesExploded = explode("/", $MODULESTR);
@@ -551,7 +557,8 @@ if (($MODULESTR != "" && $OPTIONSTR != "") || $MINMAXOPTIONSTR != "")
 	// echo $modulesToMonitor."\n".$optionsToMonitor."\n";
 
 	$dataOut = traverseDirectories($QUERY, $modulesToMonitor, $optionsToMonitor,
-											$MINMAXOPTIONSTR, $minmaxDetIDFilter );
+											$MINMAXOPTIONSTR, $minmaxDetIDFilter,
+											$BEAMDATAON );
 
 	// var_dump($dataOut);
 	echo json_encode($dataOut);

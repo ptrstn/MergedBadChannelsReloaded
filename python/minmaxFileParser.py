@@ -10,6 +10,8 @@ pixelFile = "minmax.out"
 characteristics = "NumberOfCluster-max/NumberOfOfffTrackCluster-max/size-max"
 filterDetID = -1 #304201732 #470111813
 
+##############################################################################
+
 if len(sys.argv) > 1:
 	thePath = sys.argv[1]
 	characteristics = sys.argv[2]
@@ -28,6 +30,8 @@ for ch in tmp:
 		characteristics[chSpl[0]].append(chSpl[1].upper())
 	else:
 		characteristics.update({ chSpl[0] : [chSpl[1].upper()] })
+
+##############################################################################
 
 # BUILD STRIP DICTIONARY
 

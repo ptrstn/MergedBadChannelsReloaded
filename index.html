@@ -190,9 +190,9 @@
 									        </div>
 								        </div>
 							    	</div>
-							    <div class="panel-footer" id="stripOptionSelection">
-							    	<!-- THE PLACE FOR OPTIONS -->
-							    </div>
+							    <!-- <div class="panel-footer" id="stripOptionSelection">
+							    	 THE PLACE FOR OPTIONS
+							    </div> -->
 							   </div>
 
 								<div class="panel panel-primary">
@@ -284,9 +284,23 @@
 											</div>
 										</div>
 									</div>
-									<div class="panel-footer" id="pixelOptionSelection">
-								    	<!-- THE PLACE FOR OPTIONS -->
-								    </div>
+ 									<!-- <div class="panel-footer" id="pixelOptionSelection">
+								    	THE PLACE FOR OPTIONS
+								    </div> -->
+								</div>
+								<div class="panel panel-info">
+									<div class="panel-heading">
+										<h4 class="panel-title" style="text-align: center;">Characteristics</h4>
+									</div>
+									<div class="panel-body">
+										<div id="stripOptionSelection">
+									    	<!-- THE PLACE FOR OPTIONS -->
+									    </div>
+									    <hr/>
+										<div id="pixelOptionSelection">
+									    	<!-- THE PLACE FOR OPTIONS -->
+									    </div>
+									</div>
 								</div>
 							</div>
 						</div>
@@ -356,37 +370,16 @@
 									<a href="https://twiki.cern.ch/twiki/bin/view/CMS/DqmRrApi" target="_blank">TWiki</a>
 								</div>
 							</div>
-					    	<!-- <div id="optionSelectionSubPart">
-					    		<div class="row">
-
-					    			<div class="col-md-2">
-					    				<b>Strip:</b>
-					    			</div>
-					    			<div class="col-md-10">
-					    				<label><input type="checkbox" id="option-3-Modules"> Modules</label>
-								    	<label><input type="checkbox" id="option-2-Fibers"> Fibers</label>
-								    	<label><input type="checkbox" id="option-1-APVs"> APVs</label>
-								    	<label><input type="checkbox" id="option-0-Strips"> Strips</label>
-					    			</div>
-
+					    	<div class="row">
+					    		<div class="col-md-6" style="text-align: right; font-weight: bold">
+					    			Data type: 
 					    		</div>
-					    		<div class="row">
-
-					    			<div class="col-md-2">
-					    				<b>Pixel:</b>
-					    			</div>
-					    			<div class="col-md-10">
-					    				<label><input type="checkbox" id="option-6-Dead"> Dead ROCs</label>
-								    	<label><input type="checkbox" id="option-5-Inefficient"> Inefficient ROCs</label>
-								    	<label><input type="checkbox" id="option-4-Occupancy"> Mean Occupancy</label>
-								    	
-								    	<label><input type="checkbox" id="option-7-Inefficientdcols"> Inefficient DCols</label>
-								    	<label><input type="checkbox" id="option-8-Noisycols"> Noisy Cols</label>
-					    			</div>
-
-					    		</div>
-					    	</div> -->
-
+					    		<div class="col-md-6" style="text-align: center;">
+						    		<label class="checkbox-inline">
+										<input data-toggle="toggle" type="checkbox" id="beam-cosmics-switch" data-on="COSMICS" data-off="BEAM" data-offstyle="danger" data-onstyle="info" data-width="150" data-size="small">
+									</label>
+								</div>
+					    	</div>
 					    </div>
 					</div>
 
