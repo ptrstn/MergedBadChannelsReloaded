@@ -1,6 +1,5 @@
 import json
 import sys
-from copy import deepcopy
 import os.path
 
 thePath = "/data/users/event_display/Data2017/Beam/302/302036/StreamExpress/"
@@ -20,10 +19,8 @@ if len(sys.argv) > 1:
 tmp = characteristics.split("/")
 characteristics = {}
 for ch in tmp:
-
 	if len(ch) == 0:
 		continue
-
 	chSpl = ch.split("-")
 
 	if chSpl[0] in characteristics:
@@ -33,63 +30,69 @@ for ch in tmp:
 
 ##############################################################################
 
-# BUILD STRIP DICTIONARY
-
-modValDic = {}
 stripModulesDic = {}
 pixelModulesDic = {}
 currentKey = ""
 
+# BUILD STRIP DICTIONARY
+
 if os.path.exists(thePath + stripFile):
 	with open(thePath + stripFile, "r") as file:
+
+		detID = -1
+		val = 0
+
 		for line in file:
 			line = line.strip()
 			if line.startswith("-"):
 				continue
 			if line.startswith("top"): 	#NEW SET OF TOP MODULES
-				lineSpl = line.split()
-				newKey = lineSpl[-1]
 				if currentKey != "" and currentKey in characteristics:
-					stripModulesDic.update({currentKey : deepcopy(modValDic)})
-				modValDic = {}
-				currentKey = newKey
+					stripModulesDic.update({("!MAX " + currentKey) : val})
 
-			else:
 				lineSpl = line.split()
-				detID = int(lineSpl[2])
-				val = float(lineSpl[-1])
-				modValDic.update({detID : val})
+				currentKey = lineSpl[-1]
+
+				detID = -1
+				val = 0
+
+			elif currentKey in characteristics:
+				lineSpl = line.split()
+				currDetID = int(lineSpl[2])
+				currVal = float(lineSpl[-1])
+
+				if filterDetID == -1:					# perform filtering in this stage
+					if detID != -1:
+						if val < currVal:
+							detID = currDetID
+							val = currVal
+					else:
+						detID = currDetID
+						val = currVal
+				elif currDetID == filterDetID:
+					detID = currDetID
+					val = currVal
 
 		if currentKey in characteristics:
-			stripModulesDic.update({currentKey : deepcopy(modValDic)})
-
+			stripModulesDic.update({("!MAX " + currentKey) : val})
 
 # for key in stripModulesDic:
 # 	print(key)
 # 	print(stripModulesDic[key])
-
-### FILTER
-stripModulesDicFiltered = {}
-for key in stripModulesDic:
-	keyOfInterest = -1
-	if filterDetID == -1:
-		keyOfInterest = max(stripModulesDic[key].iterkeys(), key=(lambda x: stripModulesDic[key][x]) )
-		# print(keyOfInterest)
-	else:
-		if filterDetID in stripModulesDic[key]:
-			keyOfInterest = filterDetID
-
-	stripModulesDicFiltered.update({ ("!MAX " + key) : stripModulesDic[key][keyOfInterest] if keyOfInterest != -1 else 0 })
-
-# print(stripModulesDicFiltered)
 
 #####################################################################
 
 currentKey = ""
 currentSubkey = ""
 
+# BUILD PIXEL DICTIONARY
+
 if os.path.exists(thePath + pixelFile):
 	with open(thePath + pixelFile, "r") as file:
+
+		detID = -1
+		val = 0
+
 		for line in file:
 			line = line.strip()
 			if len(line) == 0:
@@ -97,51 +100,36 @@ if os.path.exists(thePath + pixelFile):
 			lineSpl = line.split()
 
 			if len(lineSpl) == 1:
+				if currentKey != "" and currentKey in characteristics and currentSubkey in characteristics[currentKey]:
+					pixelModulesDic.update({("!" + currentSubkey + " " + currentKey) : val})
+				detID = -1
+				val = 0
+
 				if ":" not in lineSpl[0]:
-					if currentKey != "" and currentKey in characteristics:
-						pixelModulesDic.update({currentKey : deepcopy(modValDic)})
-					modValDic = {}
 					currentKey = lineSpl[0]
 				else:
 					currentSubkey = lineSpl[0][0:-1]
-					if currentKey in characteristics and currentSubkey in characteristics[currentKey]:
-						modValDic.update({currentSubkey : {}})
-			else:
-				if currentKey in characteristics and currentSubkey in characteristics[currentKey]:
-					detID = int(lineSpl[0])
-					val = float(lineSpl[-1])
-					modValDic[currentSubkey].update({detID : val})
+
+			elif currentKey in characteristics and currentSubkey in characteristics[currentKey]:
+				currDetID = int(lineSpl[0])
+				currVal = float(lineSpl[-1])
+				if filterDetID == -1:
+					if detID != -1:
+						if (currentSubkey == "MAX" and val < currVal) or (currentSubkey == "MIN" and val > currVal):
+							detID = currDetID
+							val = currVal
+					else:
+						detID = currDetID
+						val = currVal
+				else:
+					if currDetID == filterDetID:
+						detID = currDetID
+						val = currVal
 
 		if currentKey in characteristics and currentSubkey in characteristics[currentKey]:
-			pixelModulesDic.update({currentKey : deepcopy(modValDic)})
+			pixelModulesDic.update({("!" + currentSubkey + " " + currentKey) : val})
 
-### FILTER
-pixelModulesDicFiltered = {}
-for key in pixelModulesDic:
-	for minmax in pixelModulesDic[key]:
-		keyOfInterest = -1
-		if filterDetID == -1:
-			if minmax == "MIN":
-				keyOfInterest = min(pixelModulesDic[key][minmax].iterkeys(), key=(lambda x: pixelModulesDic[key][minmax][x]))
-				# print(keyOfInterest)
-			else:
-				keyOfInterest = max(pixelModulesDic[key][minmax].iterkeys(), key=(lambda x: pixelModulesDic[key][minmax][x]))
-				# print(keyOfInterest)
-		else:
-			if filterDetID in pixelModulesDic[key][minmax]:
-				keyOfInterest = filterDetID
-
-		pixelModulesDicFiltered.update({ ("!" + minmax + " " + key) : pixelModulesDic[key][minmax][keyOfInterest] if keyOfInterest != -1 else 0 })
-
-# print(pixelModulesDicFiltered)
-
-# for key in pixelModulesDic:
-# 	print(key)
-# 	print(pixelModulesDic[key])
-
-# print(len(pixelModulesDic))
-
-dataDic = {"STR" : stripModulesDicFiltered, "PX" : pixelModulesDicFiltered}
+dataDic = {"STR" : stripModulesDic, "PX" : pixelModulesDic}
 dataDicJSON = json.dumps(dataDic)
 
 print(dataDicJSON)
