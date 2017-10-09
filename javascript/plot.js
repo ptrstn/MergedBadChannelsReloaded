@@ -314,6 +314,8 @@ function CreatePlot(data, is_runByRunOn, is_superimpose)
 
 		$("#thePlot").css("border-style", "ridge");
 
+		var defaultLegendClickHandler = Chart.defaults.global.legend.onClick;
+
 		thisChart = new Chart(thisPlotContext, {
 		    type: 'line',
 		    data: chartDataRepresentation,
@@ -343,6 +345,17 @@ function CreatePlot(data, is_runByRunOn, is_superimpose)
                 	display : true,
                 	text: "Merged bad Modules for runs: " + chartDataRepresentation.labels[0] + " - " + chartDataRepresentation.labels[chartDataRepresentation.labels.length - 1],
                 },
+
+                legend: {
+                	// onClick: function(e, legendItem)
+                	// {
+                	// 	console.log("Legend item click");
+                	// 	console.log(defaultLegendClickHandler)
+                	// 	console.log(legendItem);
+                	// 	defaultLegendClickHandler(e, legendItem);
+                	// }
+                },
+
                 tooltips: {
 					position: 'nearest',
 					mode: 'nearest',

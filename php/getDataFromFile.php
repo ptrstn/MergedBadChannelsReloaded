@@ -333,7 +333,7 @@ function getMaxYear(){
 //look
 function traverseDirectories($query, $modulesToMonitor, $options,
 							 		 $minmaxOptionStr, $minmaxDetIDFilter,
-							 		 $beamDataOn)
+							 		 $beamDataOn, $subDataSet)
 {
 	$dataDic = array(
 					"STR" => array(),
@@ -438,7 +438,8 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 
 			if ($beamDataOn)
 			{
-				$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$runNum."/StreamExpress/";
+				// $currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$runNum."/StreamExpress/";
+				$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$runNum."/".$subDataSet."/";
 			
 				// echo $currPath."\n";
 
@@ -471,7 +472,7 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 			}
 			else
 			{
-				$currPath = $BASEPATH."Data".$year."/Cosmics/".$runHigh."/".$runNum."/StreamExpressCosmics/";
+				$currPath = $BASEPATH."Data".$year."/Cosmics/".$runHigh."/".$runNum."/".$subDataSet."/";
 				
 				if (file_exists($currPath))
 				{
@@ -526,13 +527,16 @@ function bitsToInt($arr)
 //DEBUG MODE ON
 // $MODULESTR = "38/09/";
 // $OPTIONSTR = "3/0";
-// $QUERY = "where r.runnumber between 299700 and 300000 ";
+// $QUERY = "where r.runnumber between 304000 and 305000";
 
 // $MODULESTR = "";
 // $OPTIONSTR = "";
 
 // $MINMAXOPTIONSTR = "NumberOfCluster-max/NumberOfOfffTrackCluster-max/size-max";
 // $MINMAXDETIDFILTER = "-1";
+
+// $BEAMDATAON = 1;
+// $SUBDATASET = "StreamExpress";
 
 $MODULESTR = urldecode($_POST['moduleStr']);
 $OPTIONSTR = urldecode($_POST['optionStr']);
@@ -542,6 +546,7 @@ $MINMAXOPTIONSTR =  urldecode($_POST['minmaxOptionStr']);
 $MINMAXDETIDFILTER = urldecode($_POST['minmaxDetIDFilter']);
 
 $BEAMDATAON = intval(urldecode($_POST['beamDataOn']));
+$SUBDATASET = urldecode($_POST['subDataSet']);
 
 if (($MODULESTR != "" && $OPTIONSTR != "") || $MINMAXOPTIONSTR != "")
 {
@@ -558,7 +563,7 @@ if (($MODULESTR != "" && $OPTIONSTR != "") || $MINMAXOPTIONSTR != "")
 
 	$dataOut = traverseDirectories($QUERY, $modulesToMonitor, $optionsToMonitor,
 											$MINMAXOPTIONSTR, $minmaxDetIDFilter,
-											$BEAMDATAON );
+											$BEAMDATAON, $SUBDATASET );
 
 	// var_dump($dataOut);
 	echo json_encode($dataOut);

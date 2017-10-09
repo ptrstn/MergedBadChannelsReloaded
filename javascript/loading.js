@@ -291,6 +291,9 @@ $(document).ready(function() {
 		var is_runByRunOn = $("#careAboutRunLength").parent().hasClass("off");
 		var is_superimpose = !$("#superimposeData").parent().hasClass("off");
 		var is_beamData = $("#beam-cosmics-switch").parent().hasClass("off");
+
+		var subDataSet = $.trim($("#propmtRecoDataset").val());
+		subDataSet = (subDataSet == "") ? ((is_beamData) ? "StreamExpress" : "StreamExpressCosmics" ): subDataSet;
 	
 		console.log("Complete set of parameters:");
 		console.log("\tmodules: " + moduleStr);
@@ -298,6 +301,7 @@ $(document).ready(function() {
 		console.log("\tis expert mode on?: " + is_expertModeOn);
 		console.log("\tquery content: " + query);
 		console.log("\tis beam data on?: " + is_beamData);
+		console.log("\tsub data set: " + subDataSet);
 
 		// return;
 
@@ -310,7 +314,10 @@ $(document).ready(function() {
 										   minmaxOptionStr : minmaxOptionStr,
 										   minmaxDetIDFilter : minmaxDetIDFilter,
 
-										   beamDataOn : is_beamData ? 1 : 0
+										   beamDataOn : is_beamData ? 1 : 0,
+										   subDataSet : subDataSet,
+										   // subDataSet : "StreamExpress"
+
 										   }, function(data){
 												$("#plotImages").css("background-image", "");
 												console.log(data);
