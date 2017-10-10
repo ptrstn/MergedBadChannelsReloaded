@@ -44,11 +44,24 @@
 	<div class="jumbotron">
 		<div class="container">
 
+			<div class="alert alert-warning setup-info">
+				<div class="row">
+					<div class="col-md-6">
+						~1a~ Bad components
+					</div>
+					<div class="col-md-3">
+						~1b~ Extreme values
+					</div>
+					<div class="col-md-3">
+						~2~ Run setup
+					</div>
+				</div>
+			</div>
+
 			<div class="row">
 				<div class="col-md-6">
-
 					<div class="panel panel-primary module-selection">
-						<div class="panel-heading">
+						<div class="panel-heading" data-toggle="tooltip" data-placement="auto bottom"   title="First choose your Tracker (sub)parts you want the information about. Then choose appropriate characteristics from the panel in the bottom. ">
 							<h4 class="panel-title">
 								Bad components selection
 							</h4>
@@ -61,11 +74,9 @@
 								      		<div class="checkbox panel-title">
 					  							<label><input type="checkbox" id="module38"></label>
 									  		</div>
-
 										    <h4 class="panel-title">
 										    	<a data-toggle="collapse" href="#stripTab" data-parent="#detectorAccordion">Strip</a>
 										    </h4>
-
 								      	</div>
 								    </div>
 								    <div id="stripTab" class="panel-collapse collapse in">
@@ -289,7 +300,7 @@
 								    </div> -->
 								</div>
 								<div class="panel panel-info">
-									<div class="panel-heading">
+									<div class="panel-heading" data-toggle="tooltip" data-placement="auto bottom"   title="Beware that some component-characteristic pairs are not supported and will not give you the plot you want. For example if you want to get the trend of all IDCs or Noisy Cols in the Barrel you have to check all layers and than Superimpose single layer plots. Only checking the Pixel Barrel will not work in that case.">
 										<h4 class="panel-title" style="text-align: center;">Characteristics</h4>
 									</div>
 									<div class="panel-body">
@@ -306,9 +317,10 @@
 						</div>
 					</div> 
 				</div>
+
 				<div class="col-md-3">
 					<div class="panel panel-primary minmaxPanel">
-						<div class="panel-heading">
+						<div class="panel-heading" data-toggle="tooltip" data-placement="auto bottom"   title="Choose extreme characteristics to plot.">
 							<h4 class="panel-title">Min/Max trend selection</h4>
 						</div>
 						<div class="panel-body" id="minmax-selection">
@@ -329,7 +341,7 @@
 					    <div class="panel-heading">
 					    	Options
 					    	<div id="expertModeSwitchContainer">
-						    	<label class="checkbox-inline">
+						    	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom"   title="Enable/disable advanced run range picking mode.">
 						    		<input data-toggle="toggle" type="checkbox" id="expertModeToggle" data-on="Expert mode: ON" data-off="Expert mode: OFF", data-size="mini" data-onstyle="danger" data-offstyle="primary" data-width="150">
 						    	</label>
 					    	</div>
@@ -338,32 +350,32 @@
 
 						    <div id="userDataPickingPanelBody">
 
-						    	<label class="checkbox-inline">
+						    	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom"   title="Switch between explicite/date based run range picking.">
 						    		<input data-toggle="toggle" type="checkbox" data-on="Run" data-off="<span class='glyphicon glyphicon-calendar'></span> Time" data-size="small" id="runDateToggle" data-onstyle="primary" data-offstyle="info">
 						    	</label>						    	
 
 						    	<div id="runPicker">
 							    	<div class="form-inline" id="runRangePicker">
 							    		<div class="form-group">
-							    			<input class="form-control" id="runMin" type="text" placeholder="RUN MIN">
+							    			<input class="form-control" id="runMin" type="text" placeholder="RUN MIN" data-toggle="tooltip" data-placement="auto bottom"   title="Run range start number.">
 							    		</div>
 							    		<div class="form-group">
-							    			<input class="form-control" id="runMax" type="text" placeholder="RUN MAX">
+							    			<input class="form-control" id="runMax" type="text" placeholder="RUN MAX" data-toggle="tooltip" data-placement="auto bottom"   title="Run range end number.">
 							    		</div>
 
-							    		<div id="slider"></div>
+							    		<div id="slider" data-toggle="tooltip" data-placement="auto bottom"   title="Range picker."></div>
 							    	</div>
 
 									<div class="input-daterange input-group" id="datePicker">
-								        <input type="text" class="form-control" name="start" placeholder="DATE START" id="dateStart"/>
+								        <input type="text" class="form-control" name="start" placeholder="DATE START" id="dateStart" data-toggle="tooltip" data-placement="auto bottom"   title="Run range start date."/>
 								        <span class="input-group-addon">to</span>
-								        <input type="text" class="form-control" name="end" placeholder="DATE END" id="dateEnd" />
+								        <input type="text" class="form-control" name="end" placeholder="DATE END" id="dateEnd" data-toggle="tooltip" data-placement="auto bottom"   title="Run range end date."/>
 								    </div>
 							    </div>
 							</div>
 							<div id = "expertDataPickingPanelBody">
 								<label for="expertQuery">Query:</label>
-								<textarea class="form-control" rows="5" id="expertQuery" placeholder="where r.runnumber between 290000 and 295000 and r.pixel_present = 1 and r.tracker_present = 1"></textarea>
+								<textarea class="form-control" rows="5" id="expertQuery" placeholder="where r.runnumber between 290000 and 295000 and r.pixel_present = 1 and r.tracker_present = 1" data-toggle="tooltip" data-placement="auto bottom"   title="This selection query will be used to pick desired runs."></textarea>
 								<div id="expertHelpSection">
 									Need help with running custom queries? Visit: 
 									<a href="http://runregistry.web.cern.ch/runregistry/" target="_blank">Run Registry</a> or 
@@ -375,8 +387,8 @@
 					    			Data type: 
 					    		</div>
 					    		<div class="col-md-6" style="text-align: center;">
-						    		<label class="checkbox-inline">
-										<input data-toggle="toggle" type="checkbox" id="beam-cosmics-switch" data-on="COSMICS" data-off="BEAM" data-offstyle="danger" data-onstyle="info" data-width="150" data-size="small">
+						    		<label class="checkbox-inline" style="width: 100%" data-toggle="tooltip" data-placement="auto bottom"   title="Switch between BEAM and COSMIC runs.">
+										<input data-toggle="toggle" type="checkbox" id="beam-cosmics-switch" data-on="COSMICS" data-off="BEAM" data-offstyle="danger" data-onstyle="info" data-width="100%" data-size="small" >
 									</label>
 								</div>
 					    	</div>
@@ -385,7 +397,7 @@
 					   				PromptReco type:
 					   			</div>
 					   			<div class="col-md-6">
-					   				<input type="text" id="propmtRecoDataset" placeholder="e.g. ZeroBias" style="width: 100%; text-align: center;">
+					   				<input type="text" id="propmtRecoDataset" placeholder="e.g. ZeroBias" style="width: 100%; text-align: center;" data-toggle="tooltip" data-placement="auto bottom"   title="Default: StreamExpress.">
 					   			</div>
 					    	</div>
 					    	<hr/>
@@ -398,7 +410,7 @@
 					    </div>
 					</div>
 
-					<button class="btn btn-warning btn-block" id="plotImages">Start plotting</button>
+					<button class="btn btn-warning btn-block" id="plotImages" data-toggle="tooltip" data-placement="auto bottom"   title="Plot data. Keep in mind that for big run ranges that process may take a while.">Start plotting</button>
 				</div>
 
 			</div>
@@ -406,24 +418,23 @@
 	</div>
 </div>
 
-
 <div id="plotControlPanel">
-	<label class="checkbox-inline">
+	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Switch whether to plot superimposition of all trends or not.">
 		<input data-toggle="toggle" type="checkbox" id="superimposeData" data-on="<span class='glyphicon glyphicon-plus'></span> Superimpose" data-off="Superimpose OFF", data-size="small" data-offstyle="info" data-width="150">
 	</label>
-	<label class="checkbox-inline">
+	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Choosing 'Run by run' results in a single bin for each run. 'Run length' takes time length of a run into account - depending on it each run has different number of bins.">
 		<input data-toggle="toggle" type="checkbox" id="careAboutRunLength" data-on="<span class='glyphicon glyphicon-time'></span> Run length" data-off="Run by run", data-size="small" data-offstyle="info" data-width="100">
 	</label>
-	<label class="checkbox-inline">
+	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Choose between linear or logarythmic Y-axis.">
 		<input data-toggle="toggle" type="checkbox" id="linLogToggle" data-on="Log" data-off="Lin", data-size="small" data-offstyle="info" data-width="100">
 	</label>
-	<button class="btn btn-default btn-sm" id="resetViewBtn"><span class="glyphicon glyphicon-refresh"></span> Reset View</button>
-	<button class="btn btn-default btn-sm" id="plotSaveBtn"><span class="glyphicon glyphicon-floppy-disk"></span> Save Plot</button>
+	<button class="btn btn-default btn-sm" id="resetViewBtn" data-toggle="tooltip" data-placement="auto bottom" title="Resets the canvas. Makes data fit into the view."><span class="glyphicon glyphicon-refresh"></span> Reset View</button>
+	<button class="btn btn-default btn-sm" id="plotSaveBtn" data-toggle="tooltip" data-placement="auto bottom" title="Save current plot view as a png image."><span class="glyphicon glyphicon-floppy-disk"></span> Save Plot</button>
 </div>
-<div class="container" id="plotContainer">
+
+<div class="container" id="plotContainer" style="display: none">
 	<canvas id="thePlot"></canvas>
 </div>
 
 </body>
-
 </html>

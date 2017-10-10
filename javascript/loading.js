@@ -4,8 +4,7 @@ $(document).ready(function() {
 	var dateFormat = "dd/mm/yyyy";
 
 	$.post("php/maxRunUtil.php", {}, function(data){
-				console.log("CurrMaxRunNum: ");				
-				console.log(data);
+				console.log("CurrMaxRunNum: " + data);
 
 				// RUN SLIDER
 				var initialSliderValues = [270000, 300000];
@@ -110,7 +109,7 @@ $(document).ready(function() {
 						      "Inefficientdcols" : "Inefficient DCols",
 						      "Noisycols" : "Noisy Cols"
 						      }
-						}
+						  };
 	var optionNum = 0;
 	for (var det in optionFooterArr)
 	{
@@ -163,7 +162,6 @@ $(document).ready(function() {
 	for (var key in minmaxSeleectionArr)
 	{
 		var htmlBuild = "<div class='col-md-12'>" + key + "</div>";
-		// console.log(htmlBuild);
 
 		for (var detValKey in minmaxSeleectionArr[key])
 		{
@@ -180,8 +178,6 @@ $(document).ready(function() {
 						 "</div>";
 
 			currOptionID = currOptionID + 2;
-
-			// <label><input type="checkbox" id="option-7-Inefficientdcols"> Inefficient DCols</label>;
 		}	
 
 		$("#minmax-selection .row").append(htmlBuild);
@@ -189,8 +185,13 @@ $(document).ready(function() {
 	$("#minmax-selection .row").parent().append("<hr/><div class='row' id='minmax-selection-filterArea'> \
 		<div class='col-md-3'>Det ID Filter</div> \
 		<div class='col-md-9'>\
-			<input type='text' id='minmaxDetIDFilter' placeholder='empty or eg. 353309700'></input>\
+			<input type='text' id='minmaxDetIDFilter' placeholder='empty or eg. 353309700' data-toggle='tooltip' data-placement='auto bottom' title='If you leave it empty you will get extreme values for each run. Passing Det ID will give a hint to look only for this Det ID in logs - if it is not there you will get 0 and reported value for this module otherwise.'></input>\
 		</div></row>");
+
+	////////////////////////////////////////////////////////////////
+
+	// tooltip enable
+	$('[data-toggle="tooltip"]').tooltip(); 
 
 	////////////////////////////////////////////////////////////////
 
@@ -229,7 +230,6 @@ $(document).ready(function() {
 			moduleStr = moduleStr + sub + "/";
 		}
 
-		// objs = $(".option-selection input[id^='option']:checked");
 		objs = $("#stripOptionSelection, #pixelOptionSelection").find("input[id^='option']:checked");
 		console.log(objs.length + " options to monitor");
 		var optionStr = "";
@@ -254,16 +254,13 @@ $(document).ready(function() {
 			var currIDSpl = currID.split("-");
 			minmaxOptionStr += currIDSpl[2] + "-" + currIDSpl[3] + "/";
 		}
-		// TMP SOLUTION
-		// minmaxOptionStr = "NumberOfCluster-max/NumberOfOfffTrackCluster-max/size-max/";
 
 		var minmaxDetIDFilter = $("#minmax-selection-filterArea #minmaxDetIDFilter").val();
-		console.log("minmax option: " + minmaxOptionStr + "\tDETID: " + minmaxDetIDFilter);
+
+		var is_expertModeOn = $("#expertModeToggle").parent().hasClass("off") == false;
 
 		var start = "";
 		var end = "";
-
-		var is_expertModeOn = $("#expertModeToggle").parent().hasClass("off") == false;
 		var query = "";
 
 		if (is_expertModeOn)
@@ -302,6 +299,7 @@ $(document).ready(function() {
 		console.log("\tquery content: " + query);
 		console.log("\tis beam data on?: " + is_beamData);
 		console.log("\tsub data set: " + subDataSet);
+		console.log("\tminmax option: " + minmaxOptionStr + "\t\tDETID: " + minmaxDetIDFilter);
 
 		// return;
 
@@ -316,7 +314,6 @@ $(document).ready(function() {
 
 										   beamDataOn : is_beamData ? 1 : 0,
 										   subDataSet : subDataSet,
-										   // subDataSet : "StreamExpress"
 
 										   }, function(data){
 												$("#plotImages").css("background-image", "");
@@ -324,11 +321,15 @@ $(document).ready(function() {
 												
 												CreatePlot(data, is_runByRunOn, is_superimpose);
 
+												$("#plotContainer").css("display", "block");
+
 										        $('html, body').animate({
 										            scrollTop: $("#plotContainer").offset().top
 										        }, 500);
 
 												$("#plotControlPanel").css("display", "block");
+
+												$("#resetViewBtn").click(); // reset shows values under 0
 												
 										   }
 										   , "json"

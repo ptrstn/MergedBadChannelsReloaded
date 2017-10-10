@@ -60,7 +60,6 @@ function getStripDataFromFile($filename, $currentDictionary, $runNumber, $module
 		}
 	}
 
- 
 	return $currentDictionary;
 }
 
@@ -134,10 +133,7 @@ function getPixelInefficiencyAndNoisynessFromFile($filename, $currentDictionary,
 					// $moduleValueDic[$elemName] = $val;
 
 					$moduleListenMode = true;
-
-
 				}
-
 			}
 		}
 		else {
@@ -329,15 +325,12 @@ function getMaxYear(){
 	return intval($commandOutput["data"][0][0]);
 }
 
-
-//look
 function traverseDirectories($query, $modulesToMonitor, $options,
 							 		 $minmaxOptionStr, $minmaxDetIDFilter,
 							 		 $beamDataOn, $subDataSet)
 {
-	$dataDic = array(
-					"STR" => array(),
-					"PX" => array());
+	$dataDic = array("STR" => array(),
+					 "PX" => array());
 
 	$runDic = array();
 
@@ -392,7 +385,6 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 						"B2" => array("Barrel Layer 2", 57),
 						"B3" => array("Barrel Layer 3", 56),
 						"B4" => array("Barrel Layer 4", 55),
-						// "tot0" => array("Barrel Total", 59),
 
 						"F-3" => array("Disk- 3", 51),
 						"F-2" => array("Disk- 2", 52),
@@ -401,18 +393,6 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 						"F1" => array("Disk 1", 50),
 						"F2" => array("Disk 2", 49),
 						"F3" => array("Disk 3", 48),
-
-						// "F-3" => array("Ring 2 Disk- 3", 45),
-						// "F-2" => array("Ring 2 Disk- 2", 46),
-						// "F-1" => array("Ring 2 Disk- 1", 47),
-
-						// "F1" => array("Ring 2 Disk 1", 44),
-						// "F2" => array("Ring 2 Disk 2", 43),
-						// "F3" => array("Ring 2 Disk 3", 42),
-
-						// "tot1" => array("Endcap Total", 54),
-
-						// "of" => array("Pixel", 60),
 						);
 
 	$pixelInefficientDColsFile = "inefficientDPixelColumns.txt";
@@ -506,7 +486,7 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 	return array(
 			"data" => $dataDic,
 			"runInfo" => $runDic);
-	return $dataDic;
+	// return $dataDic;
 }
 
 function bitsToInt($arr)
