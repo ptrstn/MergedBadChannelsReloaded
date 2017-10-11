@@ -2,7 +2,9 @@ var thisPlotContext = null;
 var thisChart = null;
 var chartDataRepresentation = null;
 
-var contrastingColors = ["#bf0000", "#f29979", "#ffa640", "#b2aa2d", "#e6f2b6", "#829973", "#00736b", "#164c59", "#00294d", "#80a2ff", "#6d00cc", "#3d004d", "#ff00ee", "#992645", "#660000", "#e55c00", "#7f5320", "#e2f200", "#354020", "#008033", "#3df2e6", "#739199", "#b6cef2", "#000033", "#d580ff", "#944d99", "#ff40a6", "#400009", "#403230", "#662900", "#33210d", "#475900", "#74d900", "#3df285", "#00c2f2", "#0080bf", "#3056bf", "#504d66", "#eabfff", "#322633", "#ff0044", "#d9a3aa"];
+var contrastingColors = ["#f00", "#0f0", "#00f", "#000", "#0ff", "#f0f", "#f70", 
+						 "#777", "#f07", "#707", "#77f", "#f77",
+						 "#bf0000", "#f29979", "#ffa640", "#b2aa2d", "#e6f2b6", "#829973", "#00736b", "#164c59", "#00294d", "#80a2ff", "#6d00cc", "#3d004d", "#ff00ee", "#992645", "#660000", "#e55c00", "#7f5320", "#e2f200", "#354020", "#008033", "#3df2e6", "#739199", "#b6cef2", "#000033", "#d580ff", "#944d99", "#ff40a6", "#400009", "#403230", "#662900", "#33210d", "#475900", "#74d900", "#3df285", "#00c2f2", "#0080bf", "#3056bf", "#504d66", "#eabfff", "#322633", "#ff0044", "#d9a3aa"];
 var contrastingColorIdx = 0;
 
 var linearScaleOptions = [{
@@ -103,6 +105,7 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 {
 	var labels = [];
 	var datasets = [];
+	contrastingColorIdx = 0;
 
 	// maybe better would be to grab it from $().innerhtml
 	var strOptionStr = [": Modules", ": Fibers" , ": APVs" , ": Strips"];
@@ -112,7 +115,7 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 								data : [],
 								borderWidth: 4,
 				            	// borderColor: generateRandomColor(),
-				            	borderColor: getRandomColorFromTable(),
+				            	borderColor: getColorFromTable(),
 				            	fill: true,
 				            	steppedLine: true,
 				            	// cubicInterpolationMode: 'monotone',
@@ -277,7 +280,7 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 							data : vals[i],
 							borderWidth: 2,
 			            	// borderColor: generateRandomColor(),
-			            	borderColor: getRandomColorFromTable(),
+			            	borderColor: getColorFromTable(),
 			            	fill: false,
 			            	steppedLine: true,
 
@@ -347,13 +350,32 @@ function CreatePlot(data, is_runByRunOn, is_superimpose)
                 },
 
                 legend: {
-                	// onClick: function(e, legendItem)
-                	// {
-                	// 	console.log("Legend item click");
-                	// 	console.log(defaultLegendClickHandler)
-                	// 	console.log(legendItem);
-                	// 	defaultLegendClickHandler(e, legendItem);
-                	// }
+         //        	onClick: function(e, legendItem)
+         //        	{
+         //        		// console.log("Legend item click");
+         //        		// console.log(defaultLegendClickHandler)
+         //        		// console.log(legendItem);
+         //        		// defaultLegendClickHandler(e, legendItem);
+
+
+         //        		var index = legendItem.datasetIndex;
+
+					    // if (index > 1) {
+					    //     // Do the original logic
+					    //     // defaultLegendClickHandler(e, legendItem);
+					    //     var m = this.chart.getDatasetMeta(index);
+					    //     m.hidden = m.hidden === null ? !this.chart.data.datasets[index].hidden : null;
+					    //     this.chart.update();
+					    // } else {
+					    //     let ci = this.chart;
+					    //     [ci.getDatasetMeta(0),
+					    //      ci.getDatasetMeta(1)].forEach(function(meta) {
+					    //         meta.hidden = meta.hidden === null? !ci.data.datasets[index].hidden : null;
+					    //     });
+					    //      ci.update();
+					    // }
+					    
+         //        	}
                 },
 
                 tooltips: {
@@ -408,4 +430,6 @@ function CreatePlot(data, is_runByRunOn, is_superimpose)
 		thisChart.update();	
 	}
 	console.log(thisChart);
+
+	return thisChart;
 }

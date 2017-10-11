@@ -44,7 +44,7 @@
 	<div class="jumbotron">
 		<div class="container">
 
-			<div class="alert alert-warning setup-info">
+			<div class="alert alert-info setup-info">
 				<div class="row">
 					<div class="col-md-6">
 						~1a~ Bad components
@@ -96,7 +96,7 @@
 													      		</div>
 													    	</div>
 													    	<div id="tibTab" class="panel-collapse collapse">
-													      		<div class="panel-body">
+													      		<div class="panel-body checkbox-checker">
 													      			<label><input type="checkbox" id="module33"> TIB Layer 1</label>
 													      			<label><input type="checkbox" id="module32"> TIB Layer 2</label>
 													      			<label><input type="checkbox" id="module31"> TIB Layer 3</label>
@@ -120,7 +120,7 @@
 														        </div>
 														    </div>
 														    <div id="tidTab" class="panel-collapse collapse">
-														        <div class="panel-body">
+														        <div class="panel-body checkbox-checker">
 															      	<label><input type="checkbox" id="module29"> TID+ Disk 1</label>
 															      	<label><input type="checkbox" id="module28"> TID+ Disk 2</label>
 															      	<label><input type="checkbox" id="module27"> TID+ Disk 3</label>
@@ -147,7 +147,7 @@
 														        </div>
 														    </div>
 														    <div id="tobTab" class="panel-collapse collapse">
-														        <div class="panel-body">
+														        <div class="panel-body checkbox-checker">
 														        	<label><input type="checkbox" id="module23"> TOB Layer 1</label>
 														        	<label><input type="checkbox" id="module22"> TOB Layer 2</label>
 														        	<label><input type="checkbox" id="module21"> TOB Layer 3</label>
@@ -173,7 +173,7 @@
 														        </div>
 														    </div>
 														    <div id="tecTab" class="panel-collapse collapse">
-														      	<div class="panel-body">
+														      	<div class="panel-body checkbox-checker">
 														      		<label><input type="checkbox" id="module17"> TEC+ DISK 1</label>
 														      		<label><input type="checkbox" id="module16"> TEC+ DISK 2</label>
 														      		<label><input type="checkbox" id="module15"> TEC+ DISK 3</label>
@@ -235,7 +235,7 @@
 													      		</div>
 													    	</div>
 													    	<div id="barrelTab" class="panel-collapse collapse in">
-													      		<div class="panel-body">
+													      		<div class="panel-body checkbox-checker">
 													      			<label><input type="checkbox" id="module58"> Barrel Layer 1</label>
 													      			<label><input type="checkbox" id="module57"> Barrel Layer 2</label>
 													      			<label><input type="checkbox" id="module56"> Barrel Layer 3</label>
@@ -259,7 +259,7 @@
 													      		</div>
 													    	</div>
 													    	<div id="endcapTab" class="panel-collapse collapse in">
-													      		<div class="panel-body">
+													      		<div class="panel-body checkbox-checker">
 
 													      			<div class="row">
 													      				<div class="col-md-6">
@@ -304,11 +304,11 @@
 										<h4 class="panel-title" style="text-align: center;">Characteristics</h4>
 									</div>
 									<div class="panel-body">
-										<div id="stripOptionSelection">
+										<div class = "checkbox-checker" id="stripOptionSelection">
 									    	<!-- THE PLACE FOR OPTIONS -->
 									    </div>
 									    <hr/>
-										<div id="pixelOptionSelection">
+										<div class = "checkbox-checker" id="pixelOptionSelection">
 									    	<!-- THE PLACE FOR OPTIONS -->
 									    </div>
 									</div>
@@ -419,6 +419,11 @@
 </div>
 
 <div id="plotControlPanel">
+
+	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Hide all plots besides superimposed one" style="display: hidden">
+		<input data-toggle="toggle" type="checkbox" id="hideSuperimposedData" data-on="<span class='glyphicon glyphicon-eye-close'></span> components superimposed" data-off="<span class='glyphicon glyphicon-eye-open'></span> Leave components", data-size="small" data-offstyle="info" data-width="150">
+	</label>
+
 	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Switch whether to plot superimposition of all trends or not.">
 		<input data-toggle="toggle" type="checkbox" id="superimposeData" data-on="<span class='glyphicon glyphicon-plus'></span> Superimpose" data-off="Superimpose OFF", data-size="small" data-offstyle="info" data-width="150">
 	</label>

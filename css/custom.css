@@ -168,6 +168,14 @@ hr{
 
 }
 
+#plotControlPanel label.checkbox-inline{
+	margin-left: 0;
+}
+
+#plotControlPanel label.checkbox-inline .toggle{
+	margin-right: 0;
+}
+
 #stripTab div[class^="col-md-"],
 #spixelTab div[class^="col-md-"]{
 	padding-right: 8px;
@@ -227,19 +235,19 @@ hr{
 */
 
 .tooltip > .tooltip-inner{
-	background-color: #73AD21;
+/*	background-color: #73AD21;
     color: #FFFFFF;
-    border: 1px solid green;
-    padding: 7px, 15px;
+    border: 1px solid green;*/
+/*    padding: 7px, 15px;
     font-size: 14px;
-    min-width: 300px;
+    min-width: 300px;*/
 }
 
 /*
 	SETUP INFO
 */
 .setup-info{
-	padding: 5px;
+	padding: 3px;
 	margin-bottom: 10px;
 
 	text-align: center;

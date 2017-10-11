@@ -1,3 +1,5 @@
+var thisChart = ""
+
 $(document).ready(function() {
 
 	var savedPlots = 0;
@@ -161,7 +163,7 @@ $(document).ready(function() {
 	var currOptionID = 11;
 	for (var key in minmaxSeleectionArr)
 	{
-		var htmlBuild = "<div class='col-md-12'>" + key + "</div>";
+		var htmlBuild = "<div class='col-md-12'>" + key + "</div><div class='checkbox-checker'>";
 
 		for (var detValKey in minmaxSeleectionArr[key])
 		{
@@ -179,6 +181,7 @@ $(document).ready(function() {
 
 			currOptionID = currOptionID + 2;
 		}	
+		htmlBuild += "</div>";
 
 		$("#minmax-selection .row").append(htmlBuild);
 	}
@@ -194,6 +197,16 @@ $(document).ready(function() {
 	$('[data-toggle="tooltip"]').tooltip(); 
 
 	////////////////////////////////////////////////////////////////
+
+	// batch (un)checking
+	$(".panel-body.checkbox-checker, .panel-body .checkbox-checker").on('dblclick', function(){
+		var checkboxes = $(this).find("input");
+		if ( $(this).find("input:checked").length )
+		{
+			checkboxes.prop('checked', false); 
+		}
+		else checkboxes.prop('checked', true); 
+	});
 
 	$("#plotSaveBtn").on('click', function(){
 		var img = $('#thePlot')[0].toDataURL("image/png");
@@ -215,6 +228,37 @@ $(document).ready(function() {
 	{
 		$("#plotImages").click();
 	});
+
+	$("#superimposeData").on('change', function(){
+		// $("#hideSuperimposedData").toggle();
+
+		var activeSuperImpose = $(this).prop('checked');
+		if (activeSuperImpose)
+		{
+			$("#hideSuperimposedData").parent().css('display', 'inline-block');
+		}
+		else{
+			$("#hideSuperimposedData").parent().css('display', 'none');
+			$("#hideSuperimposedData").bootstrapToggle('off');
+		}
+	});
+
+	$("#hideSuperimposedData").on('change', function(){
+		//(un)hide plots
+
+		if (!$("#superimposeData").prop("checked")) return; //just in case...
+
+		var numElements = thisChart.legend.legendItems.length;
+		if (numElements > 1)
+		{
+			for (var i = 0; i < numElements - 1; ++i)
+			{
+				thisChart.getDatasetMeta(i).hidden = $(this).prop("checked");
+			}
+			thisChart.update();
+		}
+	});
+
 
 	$("#plotImages").on("click", function(){
 		console.log("Process Started!");
@@ -305,6 +349,8 @@ $(document).ready(function() {
 
 		$("#plotImages").css("background-image", "url(\"img/magnify.gif\")");
 
+		$("#hideSuperimposedData").prop("checked", false);
+
 		$.post("php/getDataFromFile.php", {query : query,
 										   moduleStr : moduleStr,
 										   optionStr : optionStr,
@@ -319,7 +365,7 @@ $(document).ready(function() {
 												$("#plotImages").css("background-image", "");
 												console.log(data);
 												
-												CreatePlot(data, is_runByRunOn, is_superimpose);
+												thisChart = CreatePlot(data, is_runByRunOn, is_superimpose);
 
 												$("#plotContainer").css("display", "block");
 
