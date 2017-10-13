@@ -7,6 +7,51 @@ var contrastingColors = ["#f00", "#0f0", "#00f", "#000", "#0ff", "#f0f", "#f70",
 						 "#bf0000", "#f29979", "#ffa640", "#b2aa2d", "#e6f2b6", "#829973", "#00736b", "#164c59", "#00294d", "#80a2ff", "#6d00cc", "#3d004d", "#ff00ee", "#992645", "#660000", "#e55c00", "#7f5320", "#e2f200", "#354020", "#008033", "#3df2e6", "#739199", "#b6cef2", "#000033", "#d580ff", "#944d99", "#ff40a6", "#400009", "#403230", "#662900", "#33210d", "#475900", "#74d900", "#3df285", "#00c2f2", "#0080bf", "#3056bf", "#504d66", "#eabfff", "#322633", "#ff0044", "#d9a3aa"];
 var contrastingColorIdx = 0;
 
+var rocsInModule = 16;
+var colsInRoc = 52;
+var endcapRing1Modules = 44;
+var endcapRing2Modules = 68;
+var endcapDiskModules = endcapRing1Modules + endcapRing2Modules;
+var endcapTotalModules = 672;
+
+// only PIXEL - JUST FOR THE TIME BEING...
+var totalSubModuleCnt = {
+
+	"Pixel" : [0, 0, 0, 0, 0],
+	"Barrel Total" : [1184 * rocsInModule, 1184 * rocsInModule, 0, 0, 1184 * rocsInModule * colsInRoc / 2, 1184 * rocsInModule * colsInRoc],
+	"Barrel Layer 1" : [96 * rocsInModule, 96 * rocsInModule, 0, 0, 96 * rocsInModule * colsInRoc / 2, 96 * rocsInModule * colsInRoc],
+	"Barrel Layer 2" : [224 * rocsInModule, 224 * rocsInModule, 0, 0, 224 * rocsInModule * colsInRoc / 2, 224 * rocsInModule * colsInRoc],
+	"Barrel Layer 3" : [352 * rocsInModule, 352 * rocsInModule, 0, 0, 352 * rocsInModule * colsInRoc / 2, 352 * rocsInModule * colsInRoc],
+	"Barrel Layer 4" : [512 * rocsInModule, 512 * rocsInModule, 0, 0, 512 * rocsInModule * colsInRoc / 2, 512 * rocsInModule * colsInRoc],
+
+	"Endcap Total" : [endcapTotalModules * rocsInModule, endcapTotalModules * rocsInModule, 0, 0, 0, 0],
+
+	"Ring 1 Disk 1" : [endcapRing1Modules * rocsInModule, endcapRing1Modules * rocsInModule, 0, 0, 0, 0],
+	"Ring 1 Disk 2" : [endcapRing1Modules * rocsInModule, endcapRing1Modules * rocsInModule, 0, 0, 0, 0],
+	"Ring 1 Disk 3" : [endcapRing1Modules * rocsInModule, endcapRing1Modules * rocsInModule, 0, 0, 0, 0],
+
+	"Ring 1 Disk- 1" : [endcapRing1Modules * rocsInModule, endcapRing1Modules * rocsInModule, 0, 0, 0, 0],
+	"Ring 1 Disk- 2" : [endcapRing1Modules * rocsInModule, endcapRing1Modules * rocsInModule, 0, 0, 0, 0],
+	"Ring 1 Disk- 3" : [endcapRing1Modules * rocsInModule, endcapRing1Modules * rocsInModule, 0, 0, 0, 0],
+
+	"Ring 2 Disk 1" : [endcapRing2Modules * rocsInModule, endcapRing2Modules * rocsInModule, 0, 0, 0, 0],
+	"Ring 2 Disk 2" : [endcapRing2Modules * rocsInModule, endcapRing2Modules * rocsInModule, 0, 0, 0, 0],
+	"Ring 2 Disk 3" : [endcapRing2Modules * rocsInModule, endcapRing2Modules * rocsInModule, 0, 0, 0, 0],
+
+	"Ring 2 Disk- 1" : [endcapRing2Modules * rocsInModule, endcapRing2Modules * rocsInModule, 0, 0, 0, 0],
+	"Ring 2 Disk- 2" : [endcapRing2Modules * rocsInModule, endcapRing2Modules * rocsInModule, 0, 0, 0, 0],
+	"Ring 2 Disk- 3" : [endcapRing2Modules * rocsInModule, endcapRing2Modules * rocsInModule, 0, 0, 0, 0],
+
+	"Disk 1" : [0, 0, 0, 0, endcapDiskModules * rocsInModule * colsInRoc / 2, endcapDiskModules * rocsInModule * colsInRoc],
+	"Disk 2" : [0, 0, 0, 0, endcapDiskModules * rocsInModule * colsInRoc / 2, endcapDiskModules * rocsInModule * colsInRoc],
+	"Disk 3" : [0, 0, 0, 0, endcapDiskModules * rocsInModule * colsInRoc / 2, endcapDiskModules * rocsInModule * colsInRoc],
+
+	"Disk- 1" : [0, 0, 0, 0, endcapDiskModules * rocsInModule * colsInRoc / 2, endcapDiskModules * rocsInModule * colsInRoc],
+	"Disk- 2" : [0, 0, 0, 0, endcapDiskModules * rocsInModule * colsInRoc / 2, endcapDiskModules * rocsInModule * colsInRoc],
+	"Disk- 3" : [0, 0, 0, 0, endcapDiskModules * rocsInModule * colsInRoc / 2, endcapDiskModules * rocsInModule * colsInRoc],
+
+}
+
 var linearScaleOptions = [{
 	id: 'y-axis-0',
 	display: true,
@@ -37,19 +82,22 @@ var logarithmicScaleOptions = [{
     }
 }];
 
+function getScaleOptions(is_linear, is_relativeValues){
+
+	var scale = is_linear ? linearScaleOptions : logarithmicScaleOptions;
+	console.log(is_relativeValues);
+	scale[0].scaleLabel.labelString = is_relativeValues ? 'Database value [%]' : 'Database value';
+
+	return scale;
+}
+
 function intToStrWithLeadingZeros(num, size=5){ 
 	return ('00000' + num).substr(-size); 
 }
 
-function changeAxisType(isLinear)
+function changeAxisType(is_linear, is_relativeValues)
 {
-	if (isLinear)
-	{
-		thisChart.options.scales.yAxes = Chart.helpers.scaleMerge(Chart.defaults.scale, {yAxes: linearScaleOptions}).yAxes;
-	}
-	else{
-		thisChart.options.scales.yAxes = Chart.helpers.scaleMerge(Chart.defaults.scale, {yAxes: logarithmicScaleOptions}).yAxes;
-	}
+	thisChart.options.scales.yAxes = Chart.helpers.scaleMerge(Chart.defaults.scale, {yAxes: getScaleOptions(is_linear, is_relativeValues)}).yAxes;
 
 	Object.keys(thisChart.scales).forEach(function (axisName) {
         var scale = thisChart.scales[axisName];
@@ -101,7 +149,7 @@ function convertMinmaxModuleNameIntoLabel(moduleName)
 	return tmpNameArr[0] + " " + tmpName;
 }
 
-function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options)
+function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_relativeValues, options)
 {
 	var labels = [];
 	var datasets = [];
@@ -111,10 +159,9 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 	var strOptionStr = [": Modules", ": Fibers" , ": APVs" , ": Strips"];
 	var pxoptionStr = [": Dead ROCs", ": Inefficient ROCs", ": Mean Occupancy", ": # of Clusters", ": # of Inefficient DCols", ": # of Noisy Pixel Columns"];
 
-	var superimposedDataset = {label : "",
+	var superimposedDataset = {label : "Superimposed",
 								data : [],
 								borderWidth: 4,
-				            	// borderColor: generateRandomColor(),
 				            	borderColor: getColorFromTable(),
 				            	fill: true,
 				            	steppedLine: true,
@@ -135,8 +182,7 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 			{
 				if (is_runByRunOn)
 				{
-					if ($.inArray(runNum, labels) === -1)
-					{
+					if ($.inArray(runNum, labels) === -1){
 						labels.push(runNum);
 					}
 				}
@@ -153,22 +199,29 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 
 			    var allVals = runsArr[runNum];
 
-			    if (moduleName.startsWith("!"))
+			    if (moduleName.startsWith("!")) // dealing with extreme components trend
 			    {
-			    	if (is_runByRunOn)
+			    	if (!is_relativeValues)
 			    	{
-			    		vals[0].push({x : runNum,
-					    			  y : runsArr[runNum],
-					    		      });
-			    	}
-			    	else
-			    	{
-	    				for (var lumi = 0; lumi < data.runInfo[runNum].lbs; ++lumi)
-						{
-							vals[0].push({x : runNum + "." + intToStrWithLeadingZeros(lumi),
-				    					  y : runsArr[runNum],
-				    					 });
-						}
+				    	if (is_runByRunOn)
+				    	{
+				    		vals[0].push({x : runNum,
+						    			  y : runsArr[runNum],
+						    			  rawValue: runsArr[runNum],
+						    			  weight: 0
+						    		      });
+				    	}
+				    	else
+				    	{
+		    				for (var lumi = 0; lumi < data.runInfo[runNum].lbs; ++lumi)
+							{
+								vals[0].push({x : runNum + "." + intToStrWithLeadingZeros(lumi),
+					    					  y : runsArr[runNum],
+					    					  rawValue: runsArr[runNum],
+						    			  	  weight: 0
+					    					 });
+							}
+				    	}		    		
 			    	}
 			    }	
 			    else
@@ -177,124 +230,126 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 				    {
 				    	if (allVals[i] != -1)
 				    	{
-				    		if (is_runByRunOn)
+				    		var valueToPush = allVals[i];
+				    		var weight = 0;
+				    		if (bxpx != "STR" && is_relativeValues) // because I do not have dictionary for strip
 				    		{
-				    			vals[i].push({x : runNum,
-					    					  y : allVals[i],
-					    					 });
+				    			if (totalSubModuleCnt[moduleName][i])
+				    				weight = (totalSubModuleCnt[moduleName][i] * 0.01);
+				    				valueToPush /= weight;
 				    		}
-				    		else
+
+				    		if (!is_relativeValues || (is_relativeValues && weight))
 				    		{
-				    			for (var lumi = 0; lumi < data.runInfo[runNum].lbs; ++lumi)
-								{
-									vals[i].push({x : runNum + "." + intToStrWithLeadingZeros(lumi),
-						    					  y : allVals[i],
+				    			if (is_runByRunOn)
+					    		{
+					    			vals[i].push({x : runNum,
+						    					  y : valueToPush,
+						    					  rawValue : allVals[i],
+						    					  weight: weight
 						    					 });
-								}
-				    		}
+					    		}
+					    		else
+					    		{
+					    			for (var lumi = 0; lumi < data.runInfo[runNum].lbs; ++lumi)
+									{
+										vals[i].push({x : runNum + "." + intToStrWithLeadingZeros(lumi),
+							    					  y : valueToPush,
+							    					  rawValue : allVals[i],
+							    					  weight : weight,
+							    					 });
+									}
+					    		}
+				    		}		
 				    	}
 				    }
 				}
 			    cnt++;
 			}
-			console.log("Current dataset length: " + cnt);
+			// console.log("Current dataset length: " + cnt);
 			// console.log(vals);
 
 			for (var i = 0; i < vals.length; ++i)
 			{
 				if (vals[i].length)
 				{
-
 					if (is_superimpose && datasets.length != 0) 
 					{
 						var dataSum = superimposedDataset.data;
 						var labelSum = superimposedDataset.label;
 						// console.log(dataSum);
 
-						// vals[i] = vals[i].sort(sortData);
-						// for (var j = 0; j < dataSum.length && j < vals[i].length; ++j)
-						// {
-						// 	// console.log(vals[i][j].x);
-						// 	if (dataSum[j].x == vals[i][j].x)
-						// 		dataSum[j].y += vals[i][j].y;
-						// }
-						// console.log(vals[i]);
 						xs = vals[i].map(function(v){return v.x;});
-						console.log(xs);
+						// console.log(xs);
+
+						//FIND CORRESPONDING BIN IN SUPERIMPOSED DATA TO ACCUMULATE NEW VALUE IN IT
 						for (j in dataSum)
 						{
-							// d = vals[i].find(v => v.x === data.x);
-							// if (d === undefined) continue;
-
 							d = xs.indexOf(superimposedDataset.data[j].x);
 
 							// console.log(data);
 							if (d == -1) continue;
-							superimposedDataset.data[j].y += vals[i][d].y;
+							superimposedDataset.data[j].y += vals[i][d].rawValue;
+							superimposedDataset.data[j].weightSum += vals[i][d].weight;
 						}
-
-						if (moduleName.startsWith("!"))
-						{
-							labelSum += " + " + convertMinmaxModuleNameIntoLabel(moduleName);
-						}
-						else
-						{
-							labelSum += " + " + (moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]));
-						}
-
-						superimposedDataset.label = labelSum;
 						superimposedDataset.data = dataSum;
-						// console.log(dataSum);
 					}
 					else if (is_superimpose && datasets.length == 0)
 					{
-						if (moduleName.startsWith("!"))
-						{
-							superimposedDataset.label = convertMinmaxModuleNameIntoLabel(moduleName);
-						}
-						else
-						{						
-							superimposedDataset.label = moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]);							
-						}
-
 						for (var j = 0; j < vals[i].length; ++j)
 						{
 							superimposedDataset.data.push({x : vals[i][j].x,
-														y : vals[i][j].y});
+														   y : vals[i][j].rawValue,
+														   weightSum : vals[i][j].weight});
 						}
-						// superimposedDataset.data = superimposedDataset.data.sort(sortData);
-						// superimposedDataset.data = vals[i].slice(0);
 					}
-					// else
-					{
-						var currentLabel = "";
-						if (moduleName.startsWith("!"))
-						{
-							currentLabel = convertMinmaxModuleNameIntoLabel(moduleName);
-						}
-						else{
-							currentLabel = moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]);
-						}
-						datasets.push({
-							label : currentLabel,
-							data : vals[i],
-							borderWidth: 2,
-			            	// borderColor: generateRandomColor(),
-			            	borderColor: getColorFromTable(),
-			            	fill: false,
-			            	steppedLine: true,
 
-			            	pointHoverBorderWidth : 10,
-
-			            	// xAxisID: "x-axis-2",
-						})
+					var currentLabel = "";
+					if (moduleName.startsWith("!")){
+						currentLabel = convertMinmaxModuleNameIntoLabel(moduleName);
 					}
+					else{
+						currentLabel = moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]);
+					}
+					datasets.push({
+						label : currentLabel,
+						data : vals[i],
+						borderWidth: 2,
+						borderDash: [5, ((bxpx != "STR" && is_relativeValues) ? 5 : 0)],
+		            	// borderColor: generateRandomColor(),
+		            	borderColor: getColorFromTable(),
+		            	fill: false,
+		            	steppedLine: true,
+		            	pointHoverBorderWidth : 10,
+
+		            	// xAxisID: "x-axis-2",
+					})
 				}
 			}
 	    }
 	}
-	if (is_superimpose && datasets.length > 1)
+
+	if (is_superimpose && datasets.length > 0)
 	{
+		// only now weights can be applied correctly to the superimposed trend
+		// console.log("Before normalization:");
+		// console.log(superimposedDataset.data);
+
+		var mean = 0;
+
+		for (var i = 0; i < superimposedDataset.data.length; ++i)
+		{
+			if (superimposedDataset.data[i].weightSum){
+				superimposedDataset.data[i].y /= superimposedDataset.data[i].weightSum;				
+			}
+			mean += superimposedDataset.data[i].y;
+		}
+		mean /= superimposedDataset.data.length;
+
+		console.log("Average value: " + mean + "%");
+
+		superimposedDataset.label = "Superimposed <x> = " + (Math.round(mean * 100)/100).toFixed(2) + ((is_relativeValues) ? "%" : "");
+
 		datasets.push(superimposedDataset);
 	}
 
@@ -304,11 +359,9 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, options
 			}
 }
 
-function CreatePlot(data, is_runByRunOn, is_superimpose)
+function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_linear)
 {
-	// console.log(data);
-
-	chartDataRepresentation = (getChartDataRepresentation(data, is_runByRunOn, is_superimpose, null))
+	chartDataRepresentation = (getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_relativeValues, null))
 	
 	if (thisPlotContext == null)
 	{
@@ -416,7 +469,7 @@ function CreatePlot(data, is_runByRunOn, is_superimpose)
                         	}
                         },
                     }],
-                    yAxes: linearScaleOptions,
+                    yAxes: getScaleOptions(is_linear, is_relativeValues),
                 },
 		    }
 		});		
@@ -428,6 +481,8 @@ function CreatePlot(data, is_runByRunOn, is_superimpose)
 
 		thisChart.resetZoom();
 		thisChart.update();	
+
+		changeAxisType(is_linear, is_relativeValues);
 	}
 	console.log(thisChart);
 

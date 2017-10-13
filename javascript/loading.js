@@ -76,7 +76,9 @@ $(document).ready(function() {
 
 	})
 	$('#linLogToggle').change(function(){
-		changeAxisType($(this).parent().hasClass('off'));
+		changeAxisType($(this).parent().hasClass('off'),
+					   !$("#absoluteRelativeValues").parent().hasClass("off")
+					   );
 	});
 
 	// DATEPICKER
@@ -221,10 +223,11 @@ $(document).ready(function() {
 	});
 
 	$("#resetViewBtn").on('click', function(){
+		$("#hideSuperimposedData").bootstrapToggle('off');
 		thisChart.resetZoom();
 	});
 
-	$("#careAboutRunLength, #superimposeData").on('change', function()
+	$("#careAboutRunLength, #superimposeData, #absoluteRelativeValues").on('change', function()
 	{
 		$("#plotImages").click();
 	});
@@ -238,8 +241,8 @@ $(document).ready(function() {
 			$("#hideSuperimposedData").parent().css('display', 'inline-block');
 		}
 		else{
-			$("#hideSuperimposedData").parent().css('display', 'none');
 			$("#hideSuperimposedData").bootstrapToggle('off');
+			$("#hideSuperimposedData").parent().css('display', 'none');	
 		}
 	});
 
@@ -328,10 +331,14 @@ $(document).ready(function() {
 				query = "where r.starttime between to_date('" + start + "', '" + dateFormat + "') and to_date('" + end + "', '" + dateFormat + "') ";
 			}
 		}
+		// getting rid of pointless runs
+		query += "and r.pixel_present = 1 and r.tracker_present = 1 and r.beam1_stable = 1 and r.beam2_stable = 1"; // getting rid of pointless runs
 
 		var is_runByRunOn = $("#careAboutRunLength").parent().hasClass("off");
 		var is_superimpose = !$("#superimposeData").parent().hasClass("off");
 		var is_beamData = $("#beam-cosmics-switch").parent().hasClass("off");
+		var is_relativeValues = !$("#absoluteRelativeValues").parent().hasClass("off"); 
+		var is_linear = $('#linLogToggle').parent().hasClass("off"); 
 
 		var subDataSet = $.trim($("#propmtRecoDataset").val());
 		subDataSet = (subDataSet == "") ? ((is_beamData) ? "StreamExpress" : "StreamExpressCosmics" ): subDataSet;
@@ -365,7 +372,7 @@ $(document).ready(function() {
 												$("#plotImages").css("background-image", "");
 												console.log(data);
 												
-												thisChart = CreatePlot(data, is_runByRunOn, is_superimpose);
+												thisChart = CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_linear);
 
 												$("#plotContainer").css("display", "block");
 

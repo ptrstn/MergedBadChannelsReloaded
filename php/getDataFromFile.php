@@ -403,8 +403,8 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 
 		//DB STUFF DEPNDENT
 		$runNum = $run[0];
-		$runLength = ceil($run[1] / 1000.0);
-		$lumiLength = 2;
+		$runLength = $run[1];
+		$lumiLength = 22.3 * 100;
 		// echo $runNum."\t".$runLength."\n";
 
 		////////////////////
