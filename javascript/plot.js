@@ -7,6 +7,25 @@ var contrastingColors = ["#f00", "#0f0", "#00f", "#000", "#0ff", "#f0f", "#f70",
 						 "#bf0000", "#f29979", "#ffa640", "#b2aa2d", "#e6f2b6", "#829973", "#00736b", "#164c59", "#00294d", "#80a2ff", "#6d00cc", "#3d004d", "#ff00ee", "#992645", "#660000", "#e55c00", "#7f5320", "#e2f200", "#354020", "#008033", "#3df2e6", "#739199", "#b6cef2", "#000033", "#d580ff", "#944d99", "#ff40a6", "#400009", "#403230", "#662900", "#33210d", "#475900", "#74d900", "#3df285", "#00c2f2", "#0080bf", "#3056bf", "#504d66", "#eabfff", "#322633", "#ff0044", "#d9a3aa"];
 var contrastingColorIdx = 0;
 
+
+////
+var stripsPerAPV = 128;
+
+var tidModulesPerDisk = 24 * 2 + 24 * 2 + 40;
+var tidAPVsPerDisk = 24 * 2 * 6 + 24 * 2 * 6 + 40 * 4;
+
+var tecModulesPerDisk123 = 24 * 2 + 24 * 2 + 40 + 56 + 40 * 2 + 56 + 80;
+var tecModulesPerDisk456 =          24 * 2 + 40 + 56 + 40 * 2 + 56 + 80;
+var tecModulesPerDisk78  =                 + 40 + 56 + 40 * 2 + 56 + 80;
+var tecModulesPerDisk9   =          			  56 + 40 * 2 + 56 + 80;
+
+var tecAPVsPerDisk123 = 24 * 2 * 6 + 24 * 2 * 6 + 40 * 4 + 56 * 4 + 40 * 2 * 6 + 56 * 4 + 80 * 4;
+var tecAPVsPerDisk456 =              24 * 2 * 6 + 40 * 4 + 56 * 4 + 40 * 2 * 6 + 56 * 4 + 80 * 4;
+var tecAPVsPerDisk78  =                           40 * 4 + 56 * 4 + 40 * 2 * 6 + 56 * 4 + 80 * 4;
+var tecAPVsPerDisk9   =                                    56 * 4 + 40 * 2 * 6 + 56 * 4 + 80 * 4;
+
+////
+
 var rocsInModule = 16;
 var colsInRoc = 52;
 var endcapRing1Modules = 44;
@@ -16,8 +35,58 @@ var endcapTotalModules = 672;
 
 // only PIXEL - JUST FOR THE TIME BEING...
 var totalSubModuleCnt = {
+	//https://web.physik.rwth-aachen.de/~klein/eps.pdf
+	//http://abbaneo.web.cern.ch/abbaneo/cms/layout/whole.html
+	"Strip" : [15148, 0, 72784, 72784 * stripsPerAPV], //MODULES, FIBERS, APVS, STRIPS
+
+	"TEC" : [6400, 0, 30208, 30208 * stripsPerAPV],
+	"TIB" : [2724, 0, (4032 + 5184 + 2160 + 2592), (4032 + 5184 + 2160 + 2592) * stripsPerAPV],
+	"TID" : [tidModulesPerDisk * 6, 0, tidAPVsPerDisk * 6, tidAPVsPerDisk * 6 * stripsPerAPV],
+	"TOB" : [5208, 0, (4032 + 4608 + 2592 + 2880 + 4752 + 5328), (4032 + 4608 + 2592 + 2880 + 4752 + 5328) * stripsPerAPV],
+
+	"TIB Layer 1" : [336 * 2, 0, 4032, 4032 * stripsPerAPV],
+	"TIB Layer 2" : [432 * 2, 0, 5184, 5184 * stripsPerAPV],
+	"TIB Layer 3" : [540, 	  0, 2160, 2160 * stripsPerAPV],
+	"TIB Layer 4" : [648, 	  0, 2592, 2592 * stripsPerAPV],
+
+	"TID+ Disk 1" : [tidModulesPerDisk, 0, tidAPVsPerDisk, tidAPVsPerDisk * stripsPerAPV],
+	"TID+ Disk 2" : [tidModulesPerDisk, 0, tidAPVsPerDisk, tidAPVsPerDisk * stripsPerAPV],
+	"TID+ Disk 3" : [tidModulesPerDisk, 0, tidAPVsPerDisk, tidAPVsPerDisk * stripsPerAPV],
+	"TID- Disk 1" : [tidModulesPerDisk, 0, tidAPVsPerDisk, tidAPVsPerDisk * stripsPerAPV],
+	"TID- Disk 2" : [tidModulesPerDisk, 0, tidAPVsPerDisk, tidAPVsPerDisk * stripsPerAPV],
+	"TID- Disk 3" : [tidModulesPerDisk, 0, tidAPVsPerDisk, tidAPVsPerDisk * stripsPerAPV],
+
+	"TOB Layer 1" : [504 * 2, 0, 4032, 4032 * stripsPerAPV],
+	"TOB Layer 2" : [576 * 2, 0, 4608, 4608 * stripsPerAPV],
+	"TOB Layer 3" : [648, 	  0, 2592, 2592 * stripsPerAPV],
+	"TOB Layer 4" : [720, 	  0, 2880, 2880 * stripsPerAPV],
+	"TOB Layer 5" : [792, 	  0, 4752, 4752 * stripsPerAPV],
+	"TOB Layer 6" : [888, 	  0, 5328, 5328 * stripsPerAPV],
+
+	"TEC+ Disk 1" : [tecModulesPerDisk123, 0, tecAPVsPerDisk123, tecAPVsPerDisk123 * stripsPerAPV],
+	"TEC+ Disk 2" : [tecModulesPerDisk123, 0, tecAPVsPerDisk123, tecAPVsPerDisk123 * stripsPerAPV],
+	"TEC+ Disk 3" : [tecModulesPerDisk123, 0, tecAPVsPerDisk123, tecAPVsPerDisk123 * stripsPerAPV],
+	"TEC+ Disk 4" : [tecModulesPerDisk456, 0, tecAPVsPerDisk456, tecAPVsPerDisk456 * stripsPerAPV],
+	"TEC+ Disk 5" : [tecModulesPerDisk456, 0, tecAPVsPerDisk456, tecAPVsPerDisk456 * stripsPerAPV],
+	"TEC+ Disk 6" : [tecModulesPerDisk456, 0, tecAPVsPerDisk456, tecAPVsPerDisk456 * stripsPerAPV],
+	"TEC+ Disk 7" : [tecModulesPerDisk78,  0, tecAPVsPerDisk78 , tecAPVsPerDisk78  * stripsPerAPV],
+	"TEC+ Disk 8" : [tecModulesPerDisk78,  0, tecAPVsPerDisk78 , tecAPVsPerDisk78  * stripsPerAPV],
+	"TEC+ Disk 9" : [tecModulesPerDisk9,   0, tecAPVsPerDisk9  , tecAPVsPerDisk9   * stripsPerAPV],
+
+	"TEC- Disk 1" : [tecModulesPerDisk123, 0, tecAPVsPerDisk123, tecAPVsPerDisk123 * stripsPerAPV],
+	"TEC- Disk 2" : [tecModulesPerDisk123, 0, tecAPVsPerDisk123, tecAPVsPerDisk123 * stripsPerAPV],
+	"TEC- Disk 3" : [tecModulesPerDisk123, 0, tecAPVsPerDisk123, tecAPVsPerDisk123 * stripsPerAPV],
+	"TEC- Disk 4" : [tecModulesPerDisk456, 0, tecAPVsPerDisk456, tecAPVsPerDisk456 * stripsPerAPV],
+	"TEC- Disk 5" : [tecModulesPerDisk456, 0, tecAPVsPerDisk456, tecAPVsPerDisk456 * stripsPerAPV],
+	"TEC- Disk 6" : [tecModulesPerDisk456, 0, tecAPVsPerDisk456, tecAPVsPerDisk456 * stripsPerAPV],
+	"TEC- Disk 7" : [tecModulesPerDisk78,  0, tecAPVsPerDisk78 , tecAPVsPerDisk78  * stripsPerAPV],
+	"TEC- Disk 8" : [tecModulesPerDisk78,  0, tecAPVsPerDisk78 , tecAPVsPerDisk78  * stripsPerAPV],
+	"TEC- Disk 9" : [tecModulesPerDisk9,   0, tecAPVsPerDisk9  , tecAPVsPerDisk9   * stripsPerAPV],
+
+	////////////////////////////////////////////////////////////////////////////////////////
 
 	"Pixel" : [0, 0, 0, 0, 0],
+
 	"Barrel Total" : [1184 * rocsInModule, 1184 * rocsInModule, 0, 0, 1184 * rocsInModule * colsInRoc / 2, 1184 * rocsInModule * colsInRoc],
 	"Barrel Layer 1" : [96 * rocsInModule, 96 * rocsInModule, 0, 0, 96 * rocsInModule * colsInRoc / 2, 96 * rocsInModule * colsInRoc],
 	"Barrel Layer 2" : [224 * rocsInModule, 224 * rocsInModule, 0, 0, 224 * rocsInModule * colsInRoc / 2, 224 * rocsInModule * colsInRoc],
@@ -42,6 +111,7 @@ var totalSubModuleCnt = {
 	"Ring 2 Disk- 2" : [endcapRing2Modules * rocsInModule, endcapRing2Modules * rocsInModule, 0, 0, 0, 0],
 	"Ring 2 Disk- 3" : [endcapRing2Modules * rocsInModule, endcapRing2Modules * rocsInModule, 0, 0, 0, 0],
 
+	// NOISE AND IDCs ARE NOT REPORTED PER RING BUT THE WHOLE RING
 	"Disk 1" : [0, 0, 0, 0, endcapDiskModules * rocsInModule * colsInRoc / 2, endcapDiskModules * rocsInModule * colsInRoc],
 	"Disk 2" : [0, 0, 0, 0, endcapDiskModules * rocsInModule * colsInRoc / 2, endcapDiskModules * rocsInModule * colsInRoc],
 	"Disk 3" : [0, 0, 0, 0, endcapDiskModules * rocsInModule * colsInRoc / 2, endcapDiskModules * rocsInModule * colsInRoc],
@@ -63,7 +133,8 @@ var linearScaleOptions = [{
         fontSize : 24,
     },
 	ticks:{
-    	min: 0,
+		suggestedMin: 0,
+    	// min: 0,
 	}
 }];
 
@@ -78,7 +149,8 @@ var logarithmicScaleOptions = [{
         fontSize : 24,
     },
     ticks:{
-    	min: 0,
+    	suggestedMin: 0,
+    	// min: 0,
     }
 }];
 
@@ -232,7 +304,7 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 				    	{
 				    		var valueToPush = allVals[i];
 				    		var weight = 0;
-				    		if (bxpx != "STR" && is_relativeValues) // because I do not have dictionary for strip
+				    		if (/*bxpx != "STR" &&*/ is_relativeValues) // because I do not have dictionary for strip
 				    		{
 				    			if (totalSubModuleCnt[moduleName][i])
 				    				weight = (totalSubModuleCnt[moduleName][i] * 0.01);
@@ -315,7 +387,7 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 						label : currentLabel,
 						data : vals[i],
 						borderWidth: 2,
-						borderDash: [5, ((bxpx != "STR" && is_relativeValues) ? 5 : 0)],
+						borderDash: [5, ((/*bxpx != "STR" &&*/ is_relativeValues) ? 5 : 0)],
 		            	// borderColor: generateRandomColor(),
 		            	borderColor: getColorFromTable(),
 		            	fill: false,
@@ -345,8 +417,6 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 			mean += superimposedDataset.data[i].y;
 		}
 		mean /= superimposedDataset.data.length;
-
-		console.log("Average value: " + mean + "%");
 
 		superimposedDataset.label = "Superimposed <x> = " + (Math.round(mean * 100)/100).toFixed(2) + ((is_relativeValues) ? "%" : "");
 
