@@ -341,7 +341,7 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 
 	$searchingYearStart = $YEARLOW;
 
-	$COMMANDBASE = "python ../python/rhapi.py \"select r.runnumber, r.duration from runreg_tracker.runs r ";
+	$COMMANDBASE = "python ../python/rhapi.py \"select r.runnumber, r.duration, r.lhcfill from runreg_tracker.runs r ";
 	$COMMANDAPPENDIX = "\" --all -f json";
 
 	$currCommand = $COMMANDBASE.$query.$COMMANDAPPENDIX;
@@ -404,6 +404,8 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 		//DB STUFF DEPNDENT
 		$runNum = $run[0];
 		$runLength = $run[1];
+		$runFill = $run[2];
+
 		$lumiLength = 22.3 * 100;
 		// echo $runNum."\t".$runLength."\n";
 
@@ -447,6 +449,7 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 					$runDic[$runNum] = array(
 									"runLength" => $runLength, 
 									"lumiLength" => $lumiLength, 
+									"fill" => $runFill,
 									"lbs" => ceil(floatval($runLength) / floatval($lumiLength)));
 				}
 			}
@@ -478,6 +481,7 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 					$runDic[$runNum] = array(
 									"runLength" => $runLength, 
 									"lumiLength" => $lumiLength, 
+									"fill" => $runFill,
 									"lbs" => ceil(floatval($runLength) / floatval($lumiLength)));
 				}
 			}

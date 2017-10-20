@@ -428,9 +428,207 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 	}
 
 	// console.log("Labels:\n" + labels.sort());
-    return { labels : labels.sort(),
+
+	// TO MAKE IT EVERYTHING WORK (PROBABLY, WILL FIX PAN&ZOOM PLUGIN ALSO)
+	// + LETS FILL IT 'OLD WAY'
+	// + SORT ALL LABELS
+	// + REASSIGN 'X' WHICH WILL BE THE INDEX OF ITS PLACE IN SORTED LABELS
+	// + USE https://stackoverflow.com/questions/44041583/vertical-line-with-annotation-plugin-and-category-axis-in-chart-js AS THE HACK
+
+	labels = labels.sort();
+	var maxYValue = -100000000;
+	var minYValue = 100000000;
+	for (var i = 0; i < datasets.length; ++i)
+	{
+		var dataset = datasets[i].data;
+		for (var j = 0; j < dataset.length; ++j)
+		{
+			var prevX = dataset[j].x;
+			var idxOfX = labels.indexOf(prevX);
+			// console.log("Run: " + prevX + "\tIDX: " + idxOfX);
+			datasets[i].data[j].x = idxOfX;
+
+			if (dataset[j].y > maxYValue) maxYValue = dataset[j].y;
+			if (dataset[j].y < minYValue) minYValue = dataset[j].y;
+		}
+	}
+
+	// BUILD INFORMATION ABOUT CHANGE OF LHC FILL
+	var fillStr = "";
+
+	var previousFill = -1;
+	var fillStr = "";
+	for (var runNum in data.runInfo)
+	{
+		var fill = data.runInfo[runNum].fill;
+		if (previousFill != fill)
+		{
+			var currLabel = "" + runNum + (is_runByRunOn ? "" : ".00000");
+			var indexOfFillLabel = labels.indexOf(currLabel);
+
+			previousFill = fill;
+
+			fillStr += fill + "@" + indexOfFillLabel + "_";
+		}
+	}
+	fillStr = fillStr.substr(0, fillStr.length - 1);
+
+    return { labels : labels,
     		 datasets : datasets,
+    		 proxyLabels : [...Array(labels.length).keys()],
+    		 maxYValue : maxYValue,
+    		 minYValue : minYValue,
+    		 fillStr : fillStr,
 			}
+}
+
+function getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
+						is_superimpose, is_relativeValues, superimposedDatasetLabel,
+						fillStr)
+{
+	console.log(maxYValue);
+	console.log(minYValue);
+	console.log(is_runByRunOn);
+	console.log(binsNum);
+	console.log(is_superimpose);
+	console.log(is_relativeValues);
+	console.log(superimposedDatasetLabel);
+	console.log(fillStr);
+
+	var canvasRect = document.getElementById('thePlot').getBoundingClientRect();
+
+	var annotations = [];
+
+	var relativePositionOfLScale = 0.95;
+
+	if (!is_runByRunOn)
+	{
+		var canvasWidth = canvasRect.width - 95; //subtract y axis labels
+		var xLabelShift = 0;
+		var labelText = "";
+		var scaleLength = 50;
+		if (binsNum >= 52){
+			xLabelShift += 50 / binsNum * canvasWidth * 0.5;
+			labelText = "5000 LS";
+		}
+		else{
+			scaleLength = Math.floor( (binsNum - 2) / 10 ) * 10;
+			xLabelShift += scaleLength / binsNum * canvasWidth * 0.5;
+			labelText = "" + scaleLength * 100 + " LS";
+
+			console.log("SMALL RANGE");
+			console.log("\tScale length:" + scaleLength);
+			console.log("\tShift: " + xLabelShift);
+			console.log("\tText: " + labelText);
+		}
+
+		console.log("X Shift: " + xLabelShift);
+
+		annotations.push( {
+	        id: 'LS_line',
+	        type: 'line',
+	        mode: 'horizontal',
+	        scaleID: 'y-axis-0',
+	        value: maxYValue * relativePositionOfLScale,
+	        // endValue: chartDataRepresentation.maxYValue,
+	        borderColor: 'rgba(255, 0, 0, 0.0)', // a line without visibility
+	        borderWidth: 5,
+	        label: {
+	            position: 'center',
+	            yAdjust: -10,
+	            xAdjust: -(canvasWidth / 2 -xLabelShift),
+	            backgroundColor: "rgba(255, 255, 255, 0)",
+	            fontColor : "black",
+	            fontSize: 18,
+	            content: labelText,
+	            enabled: true
+	        },
+	        // onClick: function(e) {
+	        //     // The annotation is is bound to the `this` variable
+	        //     console.log('Annotation', e.type, this);
+	        // }
+	    } );
+
+	    annotations.push({
+		        type: 'box',
+		        xScaleID: 'x-axis-0',
+		        yScaleID: 'y-axis-0',
+		        xMin: 2,
+		        xMax: 2 + scaleLength,
+		        yMin: maxYValue * (relativePositionOfLScale - 0.01),
+		        yMax: maxYValue * relativePositionOfLScale,
+		        backgroundColor: 'rgb(101, 33, 171)',//'rgba(101, 33, 171, 0.5)',
+		        borderColor: 'rgb(101, 33, 171)',
+		        borderWidth: 1,
+		    }
+	    );
+	}
+	if (is_superimpose && is_relativeValues)
+	{
+		var labelSpl = superimposedDatasetLabel.split("=");
+		if (labelSpl.length == 2)
+		{
+			var meanValue = labelSpl[1];
+
+			annotations.push( {
+		        id: 'Mean_line',
+		        type: 'line',
+		        mode: 'horizontal',
+		        scaleID: 'y-axis-0',
+		        value: (minYValue + maxYValue) * 0.5,
+		        // endValue: chartDataRepresentation.maxYValue,
+		        borderColor: 'rgba(255, 0, 0, 0.0)', // a line without visibility
+		        borderWidth: 5,
+		        label: {
+		            position: 'center',
+		            yAdjust: -35,
+		            backgroundColor: "rgba(255, 255, 255, 0)",
+		            fontColor : "black",
+		            fontSize : 70,
+		            content: "Superimposed <x>: " + meanValue,
+		            enabled: true
+		        },
+	    	});
+		}
+	}
+	if (fillStr)
+	{
+		var fillLineID = "Fill_line";
+		var fillStrSpl = fillStr.split("_");
+
+		for (var i = 0; i < fillStrSpl.length; ++i)
+		{
+			var fillDataSpl = fillStrSpl[i].split("@");
+
+			var fillNum = fillDataSpl[0];
+			var fillPos = parseInt(fillDataSpl[1]);
+
+			console.log(fillNum + ", " + fillPos);
+
+			annotations.push( {
+		        id: fillLineID + "_" + i,
+		        type: 'line',
+		        mode: 'vertical',
+		        scaleID: 'x-axis-0',
+		        value: fillPos,
+		        // endValue: chartDataRepresentation.maxYValue,
+		        borderColor: 'rgba(0, 100, 0, 0.8)', // a line without visibility
+		        borderWidth: 2,
+		        borderDash: [20, 10],
+		        label: {
+		            position: 'top',
+		            yAdjust: 0,
+		            backgroundColor: "rgba(0, 50, 0, 0.8)",
+		            fontColor : "white",
+		            fontSize : 12,
+		            content: fillNum,
+		            enabled: true
+		        },
+	    	});			
+		}
+	}
+
+	return annotations;
 }
 
 function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_linear)
@@ -442,7 +640,15 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 	{
 		totalLength += data.runInfo[k].lbs * 100;
 	}
-	console.log("Total length: " + totalLength)
+	console.log("Total length: " + totalLength);
+	console.log(chartDataRepresentation);
+
+	// DATA USED  TO ADJUST POSITION OF ANNOTATIONS WHEN HIDING IS USED
+	$("#hideSuperimposedData").prop("data-global-max", chartDataRepresentation.maxYValue);
+	$("#hideSuperimposedData").prop("data-global-min", chartDataRepresentation.minYValue);
+	$("#hideSuperimposedData").prop("data-bin-num", chartDataRepresentation.labels.length);
+	$("#hideSuperimposedData").prop("data-super-label", chartDataRepresentation.datasets[chartDataRepresentation.datasets.length - 1].label);
+	$("#hideSuperimposedData").prop("data-fill-str", chartDataRepresentation.fillStr);
 	
 	if (thisPlotContext == null)
 	{
@@ -455,7 +661,10 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 
 		thisChart = new Chart(thisPlotContext, {
 		    type: 'line',
-		    data: chartDataRepresentation,
+		    data: {
+		    	labels : chartDataRepresentation.proxyLabels,
+		    	datasets : chartDataRepresentation.datasets,
+		    },
 
 		    options: {
 	        	pan: {
@@ -465,7 +674,7 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 					threshold: 100
 				},
 				zoom: {
-					enabled: false,
+					enabled: true,
 					drag: false,
 					mode: 'xy',
 					limits: {
@@ -513,7 +722,7 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
          //        	}
 
          			labels : {
-         				fontSize: 18,
+         				fontSize: 12,
          			},
 
                 },
@@ -534,11 +743,11 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 		   //                      },
 		   //                  },
 		   //                  footerFontStyle: 'normal'
-		   			// callbacks:{
-		   			// 	title: function(e, d){				// makes tooltip title different than scale label
-		   			// 		return d.labels[e[0].index ];
-		   			// 	}
-		   			// },
+		   			callbacks:{
+		   				title: function(e, d){				// makes tooltip title different than scale label
+		   					return chartDataRepresentation.labels[d.labels[e[0].index ]];
+		   				}
+		   			},
 				},
                 scales: {
                     xAxes: [{
@@ -552,7 +761,7 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
                         },
                         ticks:{
                         	userCallback: function(value, index, values){
-                        		var labSpl = value.split(".");
+                        		var labSpl = chartDataRepresentation.labels[value].split(".");
                         		var run = parseInt(labSpl[0]);
                         		var lbs = data.runInfo[run].lbs;
                         		// console.log(lbs);
@@ -578,54 +787,61 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
                 annotation: {
                     events: ['click'],
                     drawTime: "afterDraw",
-                    annotations: [{
-                        id: 'hline',
-                        type: 'line',
-                        mode: 'horizontal',
-                        scaleID: 'y-axis-0',
-                        value: 0,
-                        endValue: 0,
-                        borderColor: 'rgba(255, 0, 0, 0.5)', // a line without visibility
-                        borderWidth: 5,
-                        label: {
-                            position: 'left',
-                            yAdjust: -20,
-                            xAdjust: 0,
-                            backgroundColor: "red",
-                            content: "5000 LS",
-                            enabled: true
-                        },
-                        onClick: function(e) {
-                            // The annotation is is bound to the `this` variable
-                            console.log('Annotation', e.type, this);
-                        }
-                    },
+                    annotations: getAnnotations(chartDataRepresentation.maxYValue, chartDataRepresentation.minYValue, is_runByRunOn, chartDataRepresentation.labels.length,
+                    							is_superimpose, is_relativeValues, chartDataRepresentation.datasets[chartDataRepresentation.datasets.length - 1].label,
+                    							chartDataRepresentation.fillStr),
+                    // [{
+                    //     id: 'hline',
+                    //     type: 'line',
+                    //     mode: 'horizontal',
+                    //     scaleID: 'y-axis-0',
+                    //     value: chartDataRepresentation.maxYValue * 0.95,
+                    //     // endValue: chartDataRepresentation.maxYValue,
+                    //     borderColor: 'rgba(255, 0, 0, 0.0)', // a line without visibility
+                    //     borderWidth: 5,
+                    //     label: {
+                    //         position: 'left',
+                    //         yAdjust: -10,
+                    //         xAdjust: 100,
+                    //         backgroundColor: "rgba(255, 255, 255, 0)",
+                    //         fontColor : "black",
+                    //         content: "5000 LS",
+                    //         enabled: true
+                    //     },
+                    //     // onClick: function(e) {
+                    //     //     // The annotation is is bound to the `this` variable
+                    //     //     console.log('Annotation', e.type, this);
+                    //     // }
+                    // },
 
-                    {
-                        type: 'box',
-                        xScaleID: 'x-axis-0',
-                        yScaleID: 'y-axis-0',
-                        xMin: "305045",
-                        xMax: "305237",
-                        yMin: 0.01,
-                        yMax: 0.01,
-                        backgroundColor: 'rgba(101, 33, 171, 0.5)',
-                        borderColor: 'rgb(101, 33, 171)',
-                        borderWidth: 1,
-                    }
+                    // {
+                    //     type: 'box',
+                    //     xScaleID: 'x-axis-0',
+                    //     yScaleID: 'y-axis-0',
+                    //     xMin: 2,
+                    //     xMax: 52,
+                    //     yMin: chartDataRepresentation.maxYValue * 0.95,
+                    //     yMax: chartDataRepresentation.maxYValue * 0.95,
+                    //     backgroundColor: 'rgba(101, 33, 171, 0.5)',
+                    //     borderColor: 'rgb(101, 33, 171)',
+                    //     borderWidth: 1,
+                    // }
 
-                    ]
+                    // ]
                 }
 		    }
 		});		
 	}
 	else{
+		// HAVE TO MAKE SURE THAT ALL DATA IS UPDATED CORRECTLY !!!
 		console.log("Reusing existing chart...");
-		thisChart.config.data = chartDataRepresentation;
+		thisChart.config.data.labels = chartDataRepresentation.proxyLabels;
+		thisChart.config.data.datasets = chartDataRepresentation.datasets;
+
 		thisChart.config.options.title.text = "Trends for runs: " + chartDataRepresentation.labels[0].split(".")[0] + " - " + chartDataRepresentation.labels[chartDataRepresentation.labels.length - 1].split(".")[0];
 
 		thisChart.config.options.scales.xAxes[0].ticks.userCallback = function(value, index, values){
-                        		var labSpl = value.split(".");
+                        		var labSpl = chartDataRepresentation.labels[value].split(".");
                         		var run = parseInt(labSpl[0]);
                         		var lbs = data.runInfo[run].lbs;
                         		// console.log(lbs);
@@ -634,29 +850,15 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
                         			(lbs >= totalLength / 10000 && parseInt(labSpl[1]) == Math.ceil(lbs / 2.0)))
 									return labSpl[0];
 								if (labSpl[1] == "00000") return "";
-                        		},
+                        		};
 
-      	thisChart.config.options.annotation.annotations.push({
-                        id: 'vline',
-                        type: 'line',
-                        mode: 'vertical',
-                        scaleID: 'x-axis-0',
-                        value: "305188",
-                        borderColor: 'rgba(255, 128, 128, 0.5)', // a line without visibility
-                        borderWidth: 5,
-                        label: {
-                            position: 'left',
-                            yAdjust: -20,
-                            xAdjust: 0,
-                            backgroundColor: "red",
-                            content: "FILL",
-                            enabled: true
-                        },
-                        onClick: function(e) {
-                            // The annotation is is bound to the `this` variable
-                            console.log('Annotation', e.type, this);
-                        }
-                    });
+     	thisChart.config.options.tooltips.callbacks.title = function(e, d){				// makes tooltip title different than scale label
+		   														return chartDataRepresentation.labels[d.labels[e[0].index ]];
+		   													};
+
+      	thisChart.config.options.annotation.annotations = getAnnotations(chartDataRepresentation.maxYValue, chartDataRepresentation.minYValue, is_runByRunOn, chartDataRepresentation.labels.length,
+                    							is_superimpose, is_relativeValues, chartDataRepresentation.datasets[chartDataRepresentation.datasets.length - 1].label,
+                    							chartDataRepresentation.fillStr),
 
 		thisChart.resetZoom();
 		thisChart.update();	

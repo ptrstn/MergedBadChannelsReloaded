@@ -258,6 +258,40 @@ $(document).ready(function() {
 			{
 				thisChart.getDatasetMeta(i).hidden = $(this).prop("checked");
 			}
+
+			//CHANGE ANNOTATION POSITION TO MAKE SUPERIMPOSED PLOT BETTER FIT AVAILABLE SPACE
+			var maxYValue = $(this).prop("data-global-max");
+			var minYValue = $(this).prop("data-global-min");
+			var is_runByRunOn = $("#careAboutRunLength").parent().hasClass("off");
+			var binsNum = $(this).prop("data-bin-num");
+			var is_superimpose = !$("#superimposeData").parent().hasClass("off");
+			var is_relativeValues = !$("#absoluteRelativeValues").parent().hasClass("off"); 
+			var superimposedDatasetLabel = $(this).prop("data-super-label");
+			var fillStr = $(this).prop("data-fill-str");
+
+			if ($(this).prop("checked"))
+			{
+				var superimposedMin = 1000000;
+				var superimposedMax = -1000000;
+
+				var superimposedData = thisChart.config.data.datasets[thisChart.config.data.datasets.length - 1].data;
+				for (var i = 0; i < superimposedData.length; ++i)
+				{
+					if (superimposedData[i].y > superimposedMax) superimposedMax = superimposedData[i].y;
+					if (superimposedData[i].y < superimposedMin) superimposedMin = superimposedData[i].y;
+				}
+				maxYValue = superimposedMax;
+				minYValue = superimposedMin;
+			}
+			var newAnnotations = getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
+						is_superimpose, is_relativeValues, superimposedDatasetLabel,
+						fillStr);
+			// console.log(newAnnotations);
+
+			thisChart.config.options.annotation.annotations = []; // A LITTLE HACKY BUT OTHERWISE FIRST ANNOTATION IS NOT UPDATING
+			thisChart.update();
+
+			thisChart.config.options.annotation.annotations = newAnnotations;
 			thisChart.update();
 		}
 	});
@@ -331,9 +365,7 @@ $(document).ready(function() {
 				query = "where r.starttime between to_date('" + start + "', '" + dateFormat + "') and to_date('" + end + "', '" + dateFormat + "') ";
 			}
 		}
-		// getting rid of pointless runs
-		query += "and r.pixel_present = 1 and r.tracker_present = 1 and r.beam1_stable = 1 and r.beam2_stable = 1"; // getting rid of pointless runs
-
+		
 		var is_runByRunOn = $("#careAboutRunLength").parent().hasClass("off");
 		var is_superimpose = !$("#superimposeData").parent().hasClass("off");
 		var is_beamData = $("#beam-cosmics-switch").parent().hasClass("off");
@@ -342,6 +374,10 @@ $(document).ready(function() {
 
 		var subDataSet = $.trim($("#propmtRecoDataset").val());
 		subDataSet = (subDataSet == "") ? ((is_beamData) ? "StreamExpress" : "StreamExpressCosmics" ): subDataSet;
+
+		// getting rid of pointless runs
+		query += "and r.pixel_present = 1 and r.tracker_present = 1";
+		if (is_beamData) query += " and r.beam1_stable = 1 and r.beam2_stable = 1";
 	
 		console.log("Complete set of parameters:");
 		console.log("\tmodules: " + moduleStr);
