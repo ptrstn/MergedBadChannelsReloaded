@@ -246,6 +246,56 @@ $(document).ready(function() {
 		}
 	});
 
+	// FORCE ON
+	$("#lhcFillTag").bootstrapToggle('on');
+	// $("#careAboutRunLength").bootstrapToggle('on');
+	
+	$("#lhcFillTag").on('change', function(){
+		console.log("lhcFillTag changed");
+
+		updateAnnotations($("#hideSuperimposedData"));
+	});
+
+	function updateAnnotations(obj)
+	{
+		var maxYValue = $(obj).prop("data-global-max");
+		var minYValue = $(obj).prop("data-global-min");
+		var is_runByRunOn = $("#careAboutRunLength").parent().hasClass("off");
+		var binsNum = $(obj).prop("data-bin-num");
+		var is_superimpose = !$("#superimposeData").parent().hasClass("off");
+		var is_relativeValues = !$("#absoluteRelativeValues").parent().hasClass("off"); 
+		var superimposedDatasetLabel = $(obj).prop("data-super-label");
+		var fillStr = $(obj).prop("data-fill-str");
+		var is_showLHCFillTags = !$("#lhcFillTag").parent().hasClass("off"); 
+
+		fillStr = (is_showLHCFillTags) ? fillStr : "";
+
+		if ($(obj).prop("checked"))
+		{
+			var superimposedMin = 1000000;
+			var superimposedMax = -1000000;
+
+			var superimposedData = thisChart.config.data.datasets[thisChart.config.data.datasets.length - 1].data;
+			for (var i = 0; i < superimposedData.length; ++i)
+			{
+				if (superimposedData[i].y > superimposedMax) superimposedMax = superimposedData[i].y;
+				if (superimposedData[i].y < superimposedMin) superimposedMin = superimposedData[i].y;
+			}
+			maxYValue = superimposedMax;
+			minYValue = superimposedMin;
+		}
+		var newAnnotations = getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
+					is_superimpose, is_relativeValues, superimposedDatasetLabel,
+					fillStr);
+		// console.log(newAnnotations);
+
+		thisChart.config.options.annotation.annotations = []; // A LITTLE HACKY BUT OTHERWISE FIRST ANNOTATION IS NOT UPDATING
+		thisChart.update();
+
+		thisChart.config.options.annotation.annotations = newAnnotations;
+		thisChart.update();
+	}
+
 	$("#hideSuperimposedData").on('change', function(){
 		//(un)hide plots
 
@@ -258,41 +308,8 @@ $(document).ready(function() {
 			{
 				thisChart.getDatasetMeta(i).hidden = $(this).prop("checked");
 			}
-
 			//CHANGE ANNOTATION POSITION TO MAKE SUPERIMPOSED PLOT BETTER FIT AVAILABLE SPACE
-			var maxYValue = $(this).prop("data-global-max");
-			var minYValue = $(this).prop("data-global-min");
-			var is_runByRunOn = $("#careAboutRunLength").parent().hasClass("off");
-			var binsNum = $(this).prop("data-bin-num");
-			var is_superimpose = !$("#superimposeData").parent().hasClass("off");
-			var is_relativeValues = !$("#absoluteRelativeValues").parent().hasClass("off"); 
-			var superimposedDatasetLabel = $(this).prop("data-super-label");
-			var fillStr = $(this).prop("data-fill-str");
-
-			if ($(this).prop("checked"))
-			{
-				var superimposedMin = 1000000;
-				var superimposedMax = -1000000;
-
-				var superimposedData = thisChart.config.data.datasets[thisChart.config.data.datasets.length - 1].data;
-				for (var i = 0; i < superimposedData.length; ++i)
-				{
-					if (superimposedData[i].y > superimposedMax) superimposedMax = superimposedData[i].y;
-					if (superimposedData[i].y < superimposedMin) superimposedMin = superimposedData[i].y;
-				}
-				maxYValue = superimposedMax;
-				minYValue = superimposedMin;
-			}
-			var newAnnotations = getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
-						is_superimpose, is_relativeValues, superimposedDatasetLabel,
-						fillStr);
-			// console.log(newAnnotations);
-
-			thisChart.config.options.annotation.annotations = []; // A LITTLE HACKY BUT OTHERWISE FIRST ANNOTATION IS NOT UPDATING
-			thisChart.update();
-
-			thisChart.config.options.annotation.annotations = newAnnotations;
-			thisChart.update();
+			updateAnnotations(this);
 		}
 	});
 

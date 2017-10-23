@@ -856,9 +856,12 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 		   														return chartDataRepresentation.labels[d.labels[e[0].index ]];
 		   													};
 
+		var is_showLHCFillTags = !$("#lhcFillTag").parent().hasClass("off"); 
+		var fillStr = (is_showLHCFillTags) ? chartDataRepresentation.fillStr : "";
+
       	thisChart.config.options.annotation.annotations = getAnnotations(chartDataRepresentation.maxYValue, chartDataRepresentation.minYValue, is_runByRunOn, chartDataRepresentation.labels.length,
                     							is_superimpose, is_relativeValues, chartDataRepresentation.datasets[chartDataRepresentation.datasets.length - 1].label,
-                    							chartDataRepresentation.fillStr),
+                    							fillStr),
 
 		thisChart.resetZoom();
 		thisChart.update();	
