@@ -256,6 +256,72 @@ $(document).ready(function() {
 		updateAnnotations($("#hideSuperimposedData"));
 	});
 
+	// CREATE STANDARD PRESETS
+	function CleanupCheckboxes(){
+		$("input[id^='module']").prop("checked", false);
+		$("input[id^='option-']").prop("checked", false);
+
+		// $("#lhcFillTag").bootstrapToggle('on');
+
+		// $("#hideSuperimposedData").bootstrapToggle("off");
+		// $("#superimposeData").bootstrapToggle("off");
+		// $("#careAboutRunLength").bootstrapToggle("off");
+		// $("#absoluteRelativeValues").bootstrapToggle("off");
+		// $("#linLogToggle").bootstrapToggle("off");
+	}
+
+	function StandardDraw(){
+		$("#careAboutRunLength").bootstrapToggle("on");
+		$("#absoluteRelativeValues").bootstrapToggle("on");
+		$("#superimposeData").bootstrapToggle("on");
+	}
+
+	$(document).on('click', "#standardSetupStrip", function(){
+		CleanupCheckboxes();
+
+		$("#module37").prop("checked", true);
+		$("#module36").prop("checked", true);
+		$("#module35").prop("checked", true);
+		$("#module34").prop("checked", true);
+
+		$("#option-1-APVs").prop("checked", true);
+
+		StandardDraw();
+	});
+
+	$(document).on('click', "#standardSetupPixel", function(){
+		CleanupCheckboxes();
+
+		$("#module59").prop("checked", true);
+		$("#module54").prop("checked", true);
+
+		$("#option-6-Dead").prop("checked", true);
+
+		StandardDraw();
+	});
+
+	$(document).on('click', "#standardSetupPixelBarrel", function(){
+		CleanupCheckboxes();
+
+		for (var i = 58; i > 54; --i)
+			$("#module" + i).prop("checked", true);
+
+		$("#option-6-Dead").prop("checked", true);
+
+		StandardDraw();
+	});
+
+	$(document).on('click', "#standardSetupPixelDisks", function(){
+		CleanupCheckboxes();
+
+		for (var i = 53; i > 41; --i)
+			$("#module" + i).prop("checked", true);
+
+		$("#option-6-Dead").prop("checked", true);
+
+		StandardDraw();
+	});
+
 	function updateAnnotations(obj)
 	{
 		var maxYValue = $(obj).prop("data-global-max");

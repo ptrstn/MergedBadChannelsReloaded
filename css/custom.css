@@ -255,3 +255,15 @@ hr{
 	font-weight: 700;
 	color: #888;
 }
+
+#standardSetup .panel-body{
+	padding: 0;
+}
+
+#standardSetup .panel-heading{
+	text-align: center;
+}
+
+#standardSetup .panel-heading h4{
+	font-weight: bolder;
+}

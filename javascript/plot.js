@@ -133,7 +133,7 @@ var linearScaleOptions = [{
 	position: 'left',
 	scaleLabel: {
         display: true,
-        labelString: 'Database value',
+        labelString: 'Bad Components / Value',
         fontSize : 24,
     },
 	ticks:{
@@ -149,7 +149,7 @@ var logarithmicScaleOptions = [{
     position: 'left',
     scaleLabel: {
         display: true,
-        labelString: 'Database value',
+        labelString: 'Bad Components / Value',
         fontSize : 24,
     },
     ticks:{
@@ -161,8 +161,8 @@ var logarithmicScaleOptions = [{
 function getScaleOptions(is_linear, is_relativeValues){
 
 	var scale = is_linear ? linearScaleOptions : logarithmicScaleOptions;
-	console.log(is_relativeValues);
-	scale[0].scaleLabel.labelString = is_relativeValues ? 'Database value [%]' : 'Database value';
+	// console.log(is_relativeValues);
+	scale[0].scaleLabel.labelString = is_relativeValues ? 'Bad Components / Value [%]' : 'Bad Components / Value';
 
 	return scale;
 }
@@ -254,6 +254,7 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 			var cnt = 0;
 
 			var vals = [[], [], [], [], [], []];
+
 			for (var runNum in runsArr)
 			{
 				if (is_runByRunOn)
@@ -387,8 +388,16 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 					else{
 						currentLabel = moduleName + ((bxpx == "STR") ? strOptionStr[i] : pxoptionStr[i]);
 					}
+
+					var mean = 0;
+					for (var l = 0; l < vals[i].length; ++l)
+					{
+						mean += vals[i][l].y;
+					}
+					mean /= vals[i].length;
+
 					datasets.push({
-						label : currentLabel,
+						label : currentLabel + ": " + (Math.round(mean * 100)/100).toFixed(2) + ((is_relativeValues) ? "%" : ""),
 						data : vals[i],
 						borderWidth: 2,
 						borderDash: [5, ((is_relativeValues) ? 5 : 0)],
@@ -522,8 +531,6 @@ function getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
 			console.log("\tText: " + labelText);
 		}
 
-		console.log("X Shift: " + xLabelShift);
-
 		annotations.push( {
 	        id: 'LS_line',
 	        type: 'line',
@@ -575,16 +582,16 @@ function getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
 		        type: 'line',
 		        mode: 'horizontal',
 		        scaleID: 'y-axis-0',
-		        value: (minYValue + maxYValue) * 0.5,
+		        value: (/*minYValue + */maxYValue) * 0.1,
 		        // endValue: chartDataRepresentation.maxYValue,
 		        borderColor: 'rgba(255, 0, 0, 0.0)', // a line without visibility
 		        borderWidth: 5,
 		        label: {
-		            position: 'center',
-		            yAdjust: -35,
+		            position: 'left',
+		            // yAdjust: -35,
 		            backgroundColor: "rgba(255, 255, 255, 0)",
 		            fontColor : "black",
-		            fontSize : 70,
+		            fontSize : 30,
 		            content: "Superimposed <x>: " + meanValue,
 		            enabled: true
 		        },
@@ -603,7 +610,7 @@ function getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
 			var fillNum = fillDataSpl[0];
 			var fillPos = parseInt(fillDataSpl[1]);
 
-			console.log(fillNum + ", " + fillPos);
+			// console.log(fillNum + ", " + fillPos);
 
 			annotations.push( {
 		        id: fillLineID + "_" + i,
@@ -668,13 +675,13 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 
 		    options: {
 	        	pan: {
-					enabled: true,
+					enabled: false,
 					mode: 'y',
 					speed: 10,
 					threshold: 100
 				},
 				zoom: {
-					enabled: true,
+					enabled: false,
 					drag: false,
 					mode: 'xy',
 					limits: {

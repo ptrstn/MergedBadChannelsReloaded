@@ -45,7 +45,7 @@
 <div class="panel-group">
 	<div class="jumbotron">
 		<div class="container">
-
+		<!--
 			<div class="alert alert-info setup-info">
 				<div class="row">
 					<div class="col-md-6">
@@ -59,7 +59,7 @@
 					</div>
 				</div>
 			</div>
-
+		-->
 			<div class="row">
 				<div class="col-md-6">
 					<div class="panel panel-primary module-selection">
@@ -313,6 +313,7 @@
 									<div class="panel-heading" data-toggle="tooltip" data-placement="auto bottom"   title="Beware that some component-characteristic pairs are not supported and will not give you the plot you want. For example if you want to get the trend of all IDCs or Noisy Cols in the Barrel you have to check all layers and than Superimpose single layer plots. Only checking the Pixel Barrel will not work in that case. There is also no sense in choosing Strip components and asking for Pixel characteristics (and vice versa).">
 										<h4 class="panel-title" style="text-align: center;">Characteristics</h4>
 									</div>
+									
 									<div class="panel-body">
 										<div class = "checkbox-checker" id="stripOptionSelection">
 									    	<!-- THE PLACE FOR OPTIONS -->
@@ -322,25 +323,41 @@
 									    	<!-- THE PLACE FOR OPTIONS -->
 									    </div>
 									</div>
+									
 								</div>
 							</div>
 						</div>
 					</div> 
+					<div class="panel panel-warning" id="standardSetup">
+						<div class="panel-heading" data-toggle="tooltip" data-placement="auto bottom" title="Choose one of the presets to quickly get desired plots. However, remember to choose desired dataset on the Options panel beforehand!">
+							<h4 class="panel-title">Standard Presets</h4>
+						</div>
+						<div class="panel-body">
+							<div class="btn-group btn-group-justified">
+							    <a href="#" class="btn btn-default" id="standardSetupStrip">Strip</a>
+							    <a href="#" class="btn btn-default" id="standardSetupPixel">Pixel</a>
+							    <a href="#" class="btn btn-default" id="standardSetupPixelBarrel">Pixel Barrel</a>
+							    <a href="#" class="btn btn-default" id="standardSetupPixelDisks">Pixel Disks</a>
+							</div>
+						</div>
+					</div>
 				</div>
 
 				<div class="col-md-3">
 					<div class="panel panel-primary minmaxPanel">
 						<div class="panel-heading" data-toggle="tooltip" data-placement="auto bottom"   title="Choose extreme characteristics to plot.">
-							<h4 class="panel-title">Min/Max trend selection</h4>
+							<h4 class="panel-title"><a data-toggle="collapse" href="#specialPlotSelection">Min/Max trend selection</a></h4>
 						</div>
-						<div class="panel-body" id="minmax-selection">
-				    		<div class="row">
-				    			<div class="col-md-offset-8 col-md-2">
-				    				MIN
-				    			</div>
-				    			<div class="col-md-2">
-				    				MAX
-				    			</div>
+						<div id="specialPlotSelection" class="panel-collapse collapse">
+							<div class="panel-body" id="minmax-selection">
+					    		<div class="row">
+					    			<div class="col-md-offset-8 col-md-2">
+					    				MIN
+					    			</div>
+					    			<div class="col-md-2">
+					    				MAX
+					    			</div>
+					    		</div>
 				    		</div>
 			    		</div>
 					</div>
