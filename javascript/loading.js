@@ -68,6 +68,9 @@ $(document).ready(function() {
 		$('#datePicker').toggle();
 		$('#runRangePicker').toggle();
 
+		// if ($(this).parent().hasClass("off"))
+		$("#allInMonthSwitch").parent().toggle();
+
 		// console.log($("#runDateToggle").parent().hasClass("off"));
 	});
 	$('#expertModeToggle').change(function(){
@@ -80,6 +83,11 @@ $(document).ready(function() {
 					   !$("#absoluteRelativeValues").parent().hasClass("off")
 					   );
 	});
+
+	$("#allInMonthSwitch").change(function(){
+		$("#datePicker").find("span").toggle();
+		$("#datePicker").find("#dateEnd").toggle();
+	})
 
 	// DATEPICKER
 	$('.input-daterange').datepicker({
@@ -445,6 +453,13 @@ $(document).ready(function() {
 				start = $("#datepicker #dateStart").val();
 				end = $("#datepicker #dateEnd").val();
 
+				if ($("#allInMonthSwitch").prop("checked"))
+				{
+					month = start.split("/")[1];
+					year = start.split("/")[2];
+					start = "01/" + month + "/" + year;
+					end = "31/" + month + "/" + year;
+				}
 				query = "where r.starttime between to_date('" + start + "', '" + dateFormat + "') and to_date('" + end + "', '" + dateFormat + "') ";
 			}
 		}

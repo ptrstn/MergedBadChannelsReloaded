@@ -328,7 +328,7 @@
 							</div>
 						</div>
 					</div> 
-					<div class="panel panel-warning" id="standardSetup">
+					<div class="panel panel-warning" id="standardSetup" style="box-shadow: 3px 3px 5px #d0cdbd">
 						<div class="panel-heading" data-toggle="tooltip" data-placement="auto bottom" title="Choose one of the presets to quickly get desired plots. However, remember to choose desired dataset on the Options panel beforehand!">
 							<h4 class="panel-title">Standard Presets</h4>
 						</div>
@@ -345,7 +345,7 @@
 
 				<div class="col-md-3">
 					<div class="panel panel-primary minmaxPanel">
-						<div class="panel-heading" data-toggle="tooltip" data-placement="auto bottom"   title="Choose extreme characteristics to plot.">
+						<div class="panel-heading" data-toggle="tooltip" data-placement="auto bottom"   title="Choose extreme characteristics to plot. Click to (un)fold.">
 							<h4 class="panel-title"><a data-toggle="collapse" href="#specialPlotSelection">Min/Max trend selection</a></h4>
 						</div>
 						<div id="specialPlotSelection" class="panel-collapse collapse">
@@ -379,7 +379,8 @@
 
 						    	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom"   title="Switch between explicite/date based run range picking.">
 						    		<input data-toggle="toggle" type="checkbox" data-on="Run" data-off="<span class='glyphicon glyphicon-calendar'></span> Time" data-size="small" id="runDateToggle" data-onstyle="primary" data-offstyle="info">
-						    	</label>						    	
+						    	</label>
+						    	<label style="display: none" data-toggle="tooltip" data-placement="auto bottom"   title="If checked, choose whatever date in the month and you will get all runs in the chosen month."><input type="checkbox" class="checkbox-inline" id="allInMonthSwitch" style="vertical-align: top"> All runs in chosen month</label>					    	
 
 						    	<div id="runPicker">
 							    	<div class="form-inline" id="runRangePicker">
@@ -431,7 +432,7 @@
 					    	<div class="row">
 					    		<div class="col-md-12" style="text-align: right;">
 							    	Need 
-							    	<a href="https://indico.cern.ch/event/624099/contributions/2638022/attachments/1482053/2384124/presentation_updated.pdf">help</a>?
+							    	<a href="HELP/UserGuide.pdf">help</a>?
 						    	</div>
 					    	</div>
 					    </div>
