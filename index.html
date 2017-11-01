@@ -449,14 +449,14 @@
 <div id="plotControlPanel">
 
 	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Show or hide LHC fill start tags.">
-		<input data-toggle="toggle" type="checkbox" id="lhcFillTag" data-on="<span class='glyphicon glyphicon-eye-open'></span> Fill tags: visible" data-off="<span class='glyphicon glyphicon-eye-close'></span> Fill tags: hidden", data-size="small" data-offstyle="info" data-width="150">
+		<input data-toggle="toggle" type="checkbox" id="lhcFillTag" data-on="<span class='glyphicon glyphicon-eye-open'></span> Fill tags: ON" data-off="<span class='glyphicon glyphicon-eye-close'></span> Fill tags: OFF", data-size="small" data-offstyle="info" data-width="150">
 	</label>
 
 	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Hide all plots besides superimposed one" style="display: hidden">
 		<input data-toggle="toggle" type="checkbox" id="hideSuperimposedData" data-on="<span class='glyphicon glyphicon-eye-close'></span> Hide components" data-off="<span class='glyphicon glyphicon-eye-open'></span> Leave components", data-size="small" data-offstyle="info" data-width="150">
 	</label>
 	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Switch whether to plot superimposition of all trends or not.">
-		<input data-toggle="toggle" type="checkbox" id="superimposeData" data-on="<span class='glyphicon glyphicon-plus'></span> Superimpose" data-off="Superimpose OFF", data-size="small" data-offstyle="info" data-width="150">
+		<input data-toggle="toggle" type="checkbox" id="superimposeData" data-on="<span class='glyphicon glyphicon-plus'></span> Superimpose: ON" data-off="Superimpose: OFF", data-size="small" data-offstyle="info" data-width="150">
 	</label>
 
 	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Choosing 'Run by run' results in a single bin for each run. 'Run length' takes time length of a run into account - depending on it each run has different number of bins.">
@@ -467,8 +467,12 @@
 		<input data-toggle="toggle" type="checkbox" id="absoluteRelativeValues" data-on="Relative" data-off="Absolute", data-size="small" data-offstyle="info" data-width="100">
 	</label>
 
+	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Switch plot Pan&Zoom on/off (experimental)">
+		<input data-toggle="toggle" type="checkbox" id="panZoomSwitch" data-on="<span class='glyphicon glyphicon-move'></span> Pan&Zoom: ON" data-off="Pan&Zoom: OFF" data-size="small" data-offstyle="default" data-onstyle="success" data-width="150">
+	</label>
+
 	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Choose between linear or logarythmic Y-axis.">
-		<input data-toggle="toggle" type="checkbox" id="linLogToggle" data-on="Log" data-off="Lin", data-size="small" data-offstyle="info" data-width="100">
+		<input data-toggle="toggle" type="checkbox" id="linLogToggle" data-on="Log" data-off="Lin", data-size="small" data-offstyle="default" data-onstyle="success" data-width="100">
 	</label>
 	<button class="btn btn-default btn-sm" id="resetViewBtn" data-toggle="tooltip" data-placement="auto bottom" title="Resets the canvas. Makes data fit into the view."><span class="glyphicon glyphicon-refresh"></span> Reset View</button>
 	<button class="btn btn-default btn-sm" id="plotSaveBtn" data-toggle="tooltip" data-placement="auto bottom" title="Save current plot view as a png image."><span class="glyphicon glyphicon-floppy-disk"></span> Save Plot</button>

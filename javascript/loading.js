@@ -264,6 +264,20 @@ $(document).ready(function() {
 		updateAnnotations($("#hideSuperimposedData"));
 	});
 
+	$("#panZoomSwitch").on("change", function(){
+
+		if ($(this).prop('checked'))
+		{
+			thisChart.config.options.pan.enabled = true;
+			thisChart.config.options.zoom.enabled = true;
+		}
+		else
+		{
+			thisChart.config.options.pan.enabled = false;
+			thisChart.config.options.zoom.enabled = false;
+		}
+	});
+
 	// CREATE STANDARD PRESETS
 	function CleanupCheckboxes(){
 		$("input[id^='module']").prop("checked", false);
@@ -387,6 +401,9 @@ $(document).ready(function() {
 		}
 	});
 
+	function getDaysInMonth(m, y) {
+    	return m===2 ? y & 3 || !(y%25) && y & 15 ? 28 : 29 : 30 + (m+(m>>3)&1);
+	}
 
 	$("#plotImages").on("click", function(){
 		console.log("Process Started!");
@@ -455,10 +472,10 @@ $(document).ready(function() {
 
 				if ($("#allInMonthSwitch").prop("checked"))
 				{
-					month = start.split("/")[1];
-					year = start.split("/")[2];
+					month = parseInt(start.split("/")[1]);
+					year = parseInt(start.split("/")[2]);
 					start = "01/" + month + "/" + year;
-					end = "31/" + month + "/" + year;
+					end =  "" + getDaysInMonth(month, year) + "/" + month + "/" + year;
 				}
 				query = "where r.starttime between to_date('" + start + "', '" + dateFormat + "') and to_date('" + end + "', '" + dateFormat + "') ";
 			}
@@ -474,7 +491,7 @@ $(document).ready(function() {
 		subDataSet = (subDataSet == "") ? ((is_beamData) ? "StreamExpress" : "StreamExpressCosmics" ): subDataSet;
 
 		// getting rid of pointless runs
-		query += "and r.pixel_present = 1 and r.tracker_present = 1";
+		query += "and r.pixel_present = 1 and r.tracker_present = 1 and r.bpix_ready = 1 and r.fpix_ready = 1 and r.run_test = 0";
 		if (is_beamData) query += " and r.beam1_stable = 1 and r.beam2_stable = 1";
 	
 		console.log("Complete set of parameters:");

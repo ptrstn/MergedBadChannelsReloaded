@@ -624,7 +624,7 @@ function getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
 		        borderDash: [20, 10],
 		        label: {
 		            position: 'top',
-		            yAdjust: 0,
+		            yAdjust: (i % 2 ? 20: 0),
 		            backgroundColor: "rgba(0, 50, 0, 0.8)",
 		            fontColor : "white",
 		            fontSize : 12,
@@ -676,14 +676,19 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 		    options: {
 	        	pan: {
 					enabled: false,
-					mode: 'y',
-					speed: 10,
-					threshold: 100
+					mode: 'xy',
+					speed: 100,
+					threshold: 100,
+					// limits:{
+					// 	xmin: 0,
+					// 	ymin: 0
+					// }
 				},
 				zoom: {
 					enabled: false,
 					drag: false,
 					mode: 'xy',
+					// sensivity: 3,
 					limits: {
 						max: 1000,
 						min: 100,
