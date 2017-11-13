@@ -5,58 +5,79 @@ $(document).ready(function() {
 	var savedPlots = 0;
 	var dateFormat = "dd/mm/yyyy";
 
+	// RUN SLIDER - FIRST PASS - CREATE BASIC SLIDER
+	var initialSliderValues = [300000, 305000];
+	var minSliderVal = 261370;
+	var maxSliderVal = 399999;//data + 3000;
+	var ticks = [];
+	var tickStep = 15000;
+	
+	for (i = minSliderVal + tickStep; i < maxSliderVal ; i+=tickStep)
+	{
+		var mainVal = Math.floor(i / tickStep) * tickStep;
+		ticks.push(mainVal);
+	}
+
+	var slider = $("#slider")[0];
+	noUiSlider.create(slider, {
+		start: initialSliderValues,
+		connect: true,
+		step: 1,
+		range: {
+			'min': minSliderVal, // takes into account padding value
+			'max': maxSliderVal
+		},
+		padding: 3000,
+
+		pips: {
+			mode: 'values',
+			values: ticks,
+			density: 2
+		}
+	});
+
+	slider.noUiSlider.on("update", function(values, handle){
+		$("#runMin").val(values[0].substr(0,6));
+		$("#runMax").val(values[1].substr(0,6));
+	});
+
+	$("#runMin").val(initialSliderValues[0]);
+	$("#runMax").val(initialSliderValues[1]);
+
+	$("#runMin").on("change", function(){
+		slider.noUiSlider.set([$(this).val(), null]);
+	});
+	$("#runMax").on("change", function(){
+		slider.noUiSlider.set([null, $(this).val()]);
+	});
+	
+	// RUN SLIDER - SECOND PASS - RUN REGISTRY BASED UPDATE OF MAX
+
+	function EnterEmergencyMode(){
+		console.log("Could not establish connection with Run Registry - switching to Emergency Mode.");
+
+		// REMOVE ALERT ONLY AT THE END OF LOADING
+		$("#siteErrorAlert").toggle();
+	}
+    
 	$.post("php/maxRunUtil.php", {}, function(data){
-				console.log("CurrMaxRunNum: " + data);
+			console.log("CurrMaxRunNum: " + data);
 
-				// RUN SLIDER
-				var initialSliderValues = [270000, 300000];
-				var minSliderVal = 261370;
-				var maxSliderVal = data + 3000;
-				var ticks = [];
-				var tickStep = 15000;
-				
-				for (i = minSliderVal + tickStep; i < maxSliderVal ; i+=tickStep)
-				{
-					var mainVal = Math.floor(i / tickStep) * tickStep;
-					ticks.push(mainVal);
+			if (data === null || data === NaN || data !== parseInt(data, 10)) 
+			{
+				EnterEmergencyMode();
+				return;
+			}
+
+			$("#slider")[0].noUiSlider.updateOptions({
+				range : {
+					'min' : $("#slider")[0].noUiSlider.options.range.min,
+					'max' : data + 3000
 				}
-
-				var slider = $("#slider")[0];
-				noUiSlider.create(slider, {
-					start: initialSliderValues,
-					connect: true,
-					step: 1,
-					range: {
-						'min': minSliderVal, // takes into account padding value
-						'max': maxSliderVal
-					},
-					padding: 3000,
-
-					pips: {
-						mode: 'values',
-						values: ticks,
-						density: 2
-					}
-				});
-
-				slider.noUiSlider.on("update", function(values, handle){
-					$("#runMin").val(values[0].substr(0,6));
-					$("#runMax").val(values[1].substr(0,6));
-				});
-
-				$("#runMin").val(initialSliderValues[0]);
-				$("#runMax").val(initialSliderValues[1]);
-
-				$("#runMin").on("change", function(){
-					slider.noUiSlider.set([$(this).val(), null]);
-				});
-				$("#runMax").on("change", function(){
-					slider.noUiSlider.set([null, $(this).val()]);
-				});
-
-		   }
-		   , "json"
-    );
+			});
+		}
+	    , "json"
+	).fail(EnterEmergencyMode);
 
 	// TOGGLERS
 	$('#runDateToggle').bootstrapToggle('on');
@@ -486,6 +507,7 @@ $(document).ready(function() {
 		var is_beamData = $("#beam-cosmics-switch").parent().hasClass("off");
 		var is_relativeValues = !$("#absoluteRelativeValues").parent().hasClass("off"); 
 		var is_linear = $('#linLogToggle').parent().hasClass("off"); 
+		var is_emergency = $("#siteErrorAlert:hidden").length == 0;
 
 		var subDataSet = $.trim($("#propmtRecoDataset").val());
 		subDataSet = (subDataSet == "") ? ((is_beamData) ? "StreamExpress" : "StreamExpressCosmics" ): subDataSet;
@@ -502,6 +524,7 @@ $(document).ready(function() {
 		console.log("\tis beam data on?: " + is_beamData);
 		console.log("\tsub data set: " + subDataSet);
 		console.log("\tminmax option: " + minmaxOptionStr + "\t\tDETID: " + minmaxDetIDFilter);
+		console.log("\tis Emergency Mode?: " + is_emergency);
 
 		// return;
 
@@ -518,6 +541,10 @@ $(document).ready(function() {
 
 										   beamDataOn : is_beamData ? 1 : 0,
 										   subDataSet : subDataSet,
+
+										   emergencyModeOn : is_emergency ? 1 : 0,
+										   emergencyRunLow : $(".option-selection #runMin").val(),
+										   emergencyRunHigh: $(".option-selection #runMax").val(),
 
 										   }, function(data){
 												$("#plotImages").css("background-image", "");
@@ -539,5 +566,4 @@ $(document).ready(function() {
 										   , "json"
 										   );
 	});
-
 });

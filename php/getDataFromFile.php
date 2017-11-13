@@ -325,9 +325,11 @@ function getMaxYear(){
 	return intval($commandOutput["data"][0][0]);
 }
 
-function traverseDirectories($query, $modulesToMonitor, $options,
-							 		 $minmaxOptionStr, $minmaxDetIDFilter,
-							 		 $beamDataOn, $subDataSet)
+function traverseDirectories(	$query, 
+							 	$emergencymodeon, $emergencyrunlow, $emergencyrunhigh,
+								$modulesToMonitor, $options,
+						 		$minmaxOptionStr, $minmaxDetIDFilter,
+						 		$beamDataOn, $subDataSet)
 {
 	$dataDic = array("STR" => array(),
 					 "PX" => array());
@@ -341,12 +343,27 @@ function traverseDirectories($query, $modulesToMonitor, $options,
 
 	$searchingYearStart = $YEARLOW;
 
-	$COMMANDBASE = "python ../python/rhapi.py \"select r.runnumber, r.duration, r.lhcfill from runreg_tracker.runs r ";
-	$COMMANDAPPENDIX = "\" --all -f json";
+	if (!$emergencymodeon)
+	{
+		$COMMANDBASE = "python ../python/rhapi.py \"select r.runnumber, r.duration, r.lhcfill from runreg_tracker.runs r ";
+		$COMMANDAPPENDIX = "\" --all -f json";
 
-	$currCommand = $COMMANDBASE.$query.$COMMANDAPPENDIX;
-	// echo $currCommand."\n";
-	$commandOutput = getUsfulJSON(shell_exec($currCommand));
+		$currCommand = $COMMANDBASE.$query.$COMMANDAPPENDIX;
+		// echo $currCommand."\n";
+		$commandOutput = getUsfulJSON(shell_exec($currCommand));
+	}
+	else // emulate data instead...
+	{
+		$runs = range($emergencyrunlow, $emergencyrunhigh);
+
+		$runsData = array();
+
+		foreach ($runs as $run)
+		{
+			array_push($runsData, array($run, 3000, 0));
+		}
+		$commandOutput = array( "data" => $runsData);
+	}
 
 
 	// echo "This DB Data:\n".var_dump($commandOutput);
@@ -532,6 +549,11 @@ $MINMAXDETIDFILTER = urldecode($_POST['minmaxDetIDFilter']);
 $BEAMDATAON = intval(urldecode($_POST['beamDataOn']));
 $SUBDATASET = urldecode($_POST['subDataSet']);
 
+// if there is somethng fishy about RR access stick to simple run range search
+$EMERGENCYMODEON = intval(urldecode($_POST['emergencyModeOn']));
+$EMERGENCYRUNLOW = intval(urldecode($_POST['emergencyRunLow']));
+$EMERGENCYRUNHIGH = intval(urldecode($_POST['emergencyRunHigh']));
+
 if (($MODULESTR != "" && $OPTIONSTR != "") || $MINMAXOPTIONSTR != "")
 {
 	$modulesExploded = explode("/", $MODULESTR);
@@ -545,11 +567,13 @@ if (($MODULESTR != "" && $OPTIONSTR != "") || $MINMAXOPTIONSTR != "")
 
 	// echo $modulesToMonitor."\n".$optionsToMonitor."\n";
 
-	$dataOut = traverseDirectories($QUERY, $modulesToMonitor, $optionsToMonitor,
-											$MINMAXOPTIONSTR, $minmaxDetIDFilter,
-											$BEAMDATAON, $SUBDATASET );
+	$dataOut = traverseDirectories($QUERY, 
+									$EMERGENCYMODEON, $EMERGENCYRUNLOW, $EMERGENCYRUNHIGH, 
+									$modulesToMonitor, $optionsToMonitor,
+									$MINMAXOPTIONSTR, $minmaxDetIDFilter,
+									$BEAMDATAON, $SUBDATASET );
 
-	// var_dump($dataOut);
+	// var_dump($EMERGENCYMODEON);
 	echo json_encode($dataOut);
 
 	// echo shell_exec("python ../python/rhapi.py");

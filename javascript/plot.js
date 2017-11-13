@@ -235,7 +235,7 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 	var strOptionStr = [": Modules", ": Fibers" , ": APVs" , ": Strips"];
 	var pxoptionStr = [": Dead ROCs", ": Inefficient ROCs", ": Mean Occupancy", ": # of Clusters", ": # of Inefficient DCols", ": # of Noisy Pixel Columns"];
 
-	var superimposedDataset = {label : "Superimposed",
+	var superimposedDataset = {label : "",
 								data : [],
 								borderWidth: 4,
 				            	borderColor: getColorFromTable(),
@@ -396,8 +396,9 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 					}
 					mean /= vals[i].length;
 
+					var strippedValue = ((mean >= 1.0) ? mean.toFixed(2) : mean.toPrecision(2));
 					datasets.push({
-						label : currentLabel + ": " + (Math.round(mean * 100)/100).toFixed(2) + ((is_relativeValues) ? "%" : ""),
+						label : currentLabel + ": " + strippedValue + ((is_relativeValues) ? "%" : ""),
 						data : vals[i],
 						borderWidth: 2,
 						borderDash: [5, ((is_relativeValues) ? 5 : 0)],
@@ -431,7 +432,8 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 		}
 		mean /= superimposedDataset.data.length;
 
-		superimposedDataset.label = "Superimposed <x> = " + (Math.round(mean * 100)/100).toFixed(2) + ((is_relativeValues) ? "%" : "");
+		var strippedValue = ((mean >= 1.0) ? mean.toFixed(2) : mean.toPrecision(2));		
+		superimposedDataset.label = "<x> = " + strippedValue + ((is_relativeValues) ? "%" : "");
 
 		datasets.push(superimposedDataset);
 	}
@@ -592,7 +594,7 @@ function getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
 		            backgroundColor: "rgba(255, 255, 255, 0)",
 		            fontColor : "black",
 		            fontSize : 30,
-		            content: "Superimposed <x>: " + meanValue,
+		            content: "<x>: " + meanValue,
 		            enabled: true
 		        },
 	    	});

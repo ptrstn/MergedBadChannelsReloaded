@@ -45,21 +45,9 @@
 <div class="panel-group">
 	<div class="jumbotron">
 		<div class="container">
-		<!--
-			<div class="alert alert-info setup-info">
-				<div class="row">
-					<div class="col-md-6">
-						~1a~ Bad components
-					</div>
-					<div class="col-md-3">
-						~1b~ Extreme values
-					</div>
-					<div class="col-md-3">
-						~2~ Run setup
-					</div>
-				</div>
+			<div class="alert alert-danger" id="siteErrorAlert" style="display: none; text-align: center; font-size: 18px">
+			  	<strong>Error!</strong> Site not initialized properly. If it is not in the maintainence mode the most probable cause is the problem with Run Registry access.</br><strong>Now only run-range based functionality works with normal flag checking off.</strong>
 			</div>
-		-->
 			<div class="row">
 				<div class="col-md-6">
 					<div class="panel panel-primary module-selection">
@@ -467,7 +455,7 @@
 		<input data-toggle="toggle" type="checkbox" id="absoluteRelativeValues" data-on="Relative" data-off="Absolute", data-size="small" data-offstyle="info" data-width="100">
 	</label>
 
-	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Switch plot Pan&Zoom on/off (experimental)">
+	<label class="checkbox-inline" data-toggle="tooltip" data-placement="auto bottom" title="Switch plot Pan&Zoom on/off(experimental).">
 		<input data-toggle="toggle" type="checkbox" id="panZoomSwitch" data-on="<span class='glyphicon glyphicon-move'></span> Pan&Zoom: ON" data-off="Pan&Zoom: OFF" data-size="small" data-offstyle="default" data-onstyle="success" data-width="150">
 	</label>
 
