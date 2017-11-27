@@ -331,6 +331,7 @@ function traverseDirectories(	$query,
 						 		$minmaxOptionStr, $minmaxDetIDFilter,
 						 		$beamDataOn, $subDataSet)
 {
+
 	$dataDic = array("STR" => array(),
 					 "PX" => array());
 
@@ -339,7 +340,7 @@ function traverseDirectories(	$query,
 	$BASEPATH = "/data/users/event_display/";
 
 	$YEARLOW = 2016;
-	$YEARHIGH = getMaxYear();
+	$YEARHIGH = 2020; // arbitrary maximum year -> updated once in online mode
 
 	$searchingYearStart = $YEARLOW;
 
@@ -351,6 +352,8 @@ function traverseDirectories(	$query,
 		$currCommand = $COMMANDBASE.$query.$COMMANDAPPENDIX;
 		// echo $currCommand."\n";
 		$commandOutput = getUsfulJSON(shell_exec($currCommand));
+
+		$YEARHIGH = getMaxYear(); // update max year
 	}
 	else // emulate data instead...
 	{
@@ -538,6 +541,10 @@ function bitsToInt($arr)
 
 // $BEAMDATAON = 1;
 // $SUBDATASET = "StreamExpress";
+
+// $EMERGENCYMODEON = 1;
+// $EMERGENCYRUNLOW = 305500;
+// $EMERGENCYRUNHIGH = 305600;
 
 $MODULESTR = urldecode($_POST['moduleStr']);
 $OPTIONSTR = urldecode($_POST['optionStr']);
