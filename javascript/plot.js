@@ -433,7 +433,7 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 		mean /= superimposedDataset.data.length;
 
 		var strippedValue = ((mean >= 1.0) ? mean.toFixed(2) : mean.toPrecision(2));		
-		superimposedDataset.label = "<x> = " + strippedValue + ((is_relativeValues) ? "%" : "");
+		superimposedDataset.label = "Average = " + strippedValue + ((is_relativeValues) ? "%" : "");
 
 		datasets.push(superimposedDataset);
 	}
@@ -594,7 +594,7 @@ function getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
 		            backgroundColor: "rgba(255, 255, 255, 0)",
 		            fontColor : "black",
 		            fontSize : 30,
-		            content: "<x>: " + meanValue,
+		            content: "Average: " + meanValue,
 		            enabled: true
 		        },
 	    	});

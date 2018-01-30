@@ -152,9 +152,19 @@ function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $module
 
 		if($handle)
 		{
+			$unchangedDictionary = $currentDictionary;
+
+			$isDataCorrect = 0;
+
 			while (($line = fgets($handle)) !== false) 
 			{
-				if (substr($line, 0, 1) !== "#" && substr($line, 0, 3) !== "DQM")
+				if (substr($line, 0, 3) == "DQM") // something is wrong with the report for this run...
+				{
+					fclose($handle);
+					return $unchangedDictionary;
+				}
+
+				else if (substr($line, 0, 1) !== "#")
 				{
 					$line = trim($line);
 					if (strlen($line) == 0) continue;
@@ -170,6 +180,17 @@ function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $module
 					{
 						$elemName = $elemName.$totIdx;
 						$totIdx++;
+					}
+
+					// applying cluster cut (at least mean 100 per element is required)
+					if ($elemName == "of")
+					{
+						$isDataCorrect = 1;
+						if (doubleval($components[3]) < 29696*100)
+						{
+							fclose($handle);
+							return $unchangedDictionary;
+						}
 					}
 					
 					if ($modulesToMonitor & (1 << $pixelConnectionDic[$elemName][1]))
@@ -219,6 +240,8 @@ function getPixelDataFromFile($filename, $currentDictionary, $runNumber, $module
 			}
 
 			fclose($handle);
+
+			if (!$isDataCorrect) return $unchangedDictionary;
 		}
 		else {
 		    echo "The file: ".$filename." does not exist!";
@@ -529,14 +552,14 @@ function bitsToInt($arr)
 }
 
 //DEBUG MODE ON
-// $MODULESTR = "38/09/";
-// $OPTIONSTR = "3/0";
+// $MODULESTR = "59/54/";
+// $OPTIONSTR = "6/";
 // $QUERY = "where r.runnumber between 304000 and 305000";
 
-// $MODULESTR = "";
-// $OPTIONSTR = "";
+// // $MODULESTR = "";
+// // $OPTIONSTR = "";
 
-// $MINMAXOPTIONSTR = "NumberOfCluster-max/NumberOfOfffTrackCluster-max/size-max";
+// $MINMAXOPTIONSTR = "";#"NumberOfCluster-max/NumberOfOfffTrackCluster-max/size-max";
 // $MINMAXDETIDFILTER = "-1";
 
 // $BEAMDATAON = 1;

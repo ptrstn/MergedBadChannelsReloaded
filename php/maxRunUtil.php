@@ -1,6 +1,6 @@
 <?php
 
-$command = "python ../python/rhapi.py \"select max(r.runnumber) as runMax from runreg_tracker.runs r where r.runnumber > 300000\" --all -f json";
+$command = "python ../python/rhapi.py \"select max(r.runnumber) as runMax from runreg_tracker.runs r where r.runnumber > 308000\" --all -f json";
 
 $commandOutput = shell_exec($command);
 $commandOutput = str_replace("u'data'", "\"data\"", $commandOutput);
