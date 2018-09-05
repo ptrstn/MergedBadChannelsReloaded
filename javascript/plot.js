@@ -594,7 +594,8 @@ function getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
 		            backgroundColor: "rgba(255, 255, 255, 0)",
 		            fontColor : "black",
 		            fontSize : 30,
-		            content: "Average: " + meanValue,
+		            //content: "Average: " + meanValue,
+		            content: "",
 		            enabled: true
 		        },
 	    	});
