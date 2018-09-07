@@ -467,8 +467,8 @@ function traverseDirectories(	$query,
 				$currPath = $BASEPATH."Data".$year."/Beam/".$runHigh."/".$runNum."/".$subDataSet."/";
 			
 				// echo $currPath."\n";
-
-				if (file_exists($currPath))
+				
+				if (file_exists($currPath) && $runNum != "319469" && $runNum != "319470")
 				{
 					// echo $currPath."\n";
 					if (file_exists($currPath.$stripFile))
