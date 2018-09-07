@@ -669,6 +669,10 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 
 		var defaultLegendClickHandler = Chart.defaults.global.legend.onClick;
 
+		var previousFillNumber = -1; // Used as a quick workaround to replace run number with the fill number 
+		var number_of_slots = 20; // Maximum number of x labels are should be shown in the Graph
+		var last_slot = -1; // Used as q quick workaround to implement the maximum number of x labels
+
 		thisChart = new Chart(thisPlotContext, {
 		    type: 'line',
 		    data: {
@@ -769,29 +773,37 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
                         display: true,
                         scaleLabel: {
                             display: true,
-                            labelString: 'Run Number',
+                            labelString: 'Fill Number',
                             fontSize : 24,
                             
                             // id: "x-axis-2",
                         },
                         ticks:{
                         	userCallback: function(value, index, values){
-                        		var labSpl = chartDataRepresentation.labels[value].split(".");
-                        		var run = parseInt(labSpl[0]);
-                        		var lbs = data.runInfo[run].lbs;
-                        		// console.log(lbs);
-
-                        		if (labSpl.length == 1 || 
-                        			(lbs >= totalLength / 10000 && parseInt(labSpl[1]) == Math.ceil(lbs / 2.0)))
-									return labSpl[0];
-								if (labSpl[1] == "00000") return "";
+                        		var labelSplit = chartDataRepresentation.labels[value].split(".");
+                        		var run = parseInt(labelSplit[0]);
+					
+					previousLabelIndex = index;
+					var currentFillNumber = data.runInfo[run].fill;
+					var fillLabel = "";
+					if(previousFillNumber != currentFillNumber){
+					    	divisor = values.length / number_of_slots;
+						current_slot = Math.floor(index/divisor)
+					    	if(last_slot != current_slot){
+							fillLabel = "" + currentFillNumber;
+							last_slot = current_slot;
+						}
+					}
+					previousFillNumber = currentFillNumber;
+					return fillLabel;
                         	},
                         	autoSkip : false,
                         	maxRotation: 90,
                         },
                         offset : true,
                         gridLines: {
-                        	borderDash: [5, 5],
+                        	//borderDash: [5, 5],
+				display: false,
                         },
                     }],
                     yAxes: getScaleOptions(is_linear, is_relativeValues),
@@ -854,17 +866,26 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 		thisChart.config.data.datasets = chartDataRepresentation.datasets;
 
 		thisChart.config.options.title.text = "Trends for runs: " + chartDataRepresentation.labels[0].split(".")[0] + " - " + chartDataRepresentation.labels[chartDataRepresentation.labels.length - 1].split(".")[0];
-
+		var previousFillNumber = -1; // Used as a quick workaround to replace run number with the fill number 
+		var number_of_slots = 20; // Maximum number of x labels are should be shown in the Graph
+		var last_slot = -1; // Used as q quick workaround to implement the maximum number of x labels
 		thisChart.config.options.scales.xAxes[0].ticks.userCallback = function(value, index, values){
-                        		var labSpl = chartDataRepresentation.labels[value].split(".");
-                        		var run = parseInt(labSpl[0]);
-                        		var lbs = data.runInfo[run].lbs;
-                        		// console.log(lbs);
-
-                        		if (labSpl.length == 1 || 
-                        			(lbs >= totalLength / 10000 && parseInt(labSpl[1]) == Math.ceil(lbs / 2.0)))
-									return labSpl[0];
-								if (labSpl[1] == "00000") return "";
+                        		var labelSplit = chartDataRepresentation.labels[value].split(".");
+                        		var run = parseInt(labelSplit[0]);
+					
+					previousLabelIndex = index;
+					var currentFillNumber = data.runInfo[run].fill;
+					var fillLabel = "";
+					if(previousFillNumber != currentFillNumber){
+					    	divisor = values.length / number_of_slots;
+						current_slot = Math.floor(index/divisor)
+					    	if(last_slot != current_slot){
+							fillLabel = "" + currentFillNumber;
+							last_slot = current_slot;
+						}
+					}
+					previousFillNumber = currentFillNumber;
+					return fillLabel;
                         		};
 
      	thisChart.config.options.tooltips.callbacks.title = function(e, d){				// makes tooltip title different than scale label
