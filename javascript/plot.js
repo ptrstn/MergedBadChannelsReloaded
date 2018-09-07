@@ -401,7 +401,7 @@ function getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_rela
 						label : currentLabel + ": " + strippedValue + ((is_relativeValues) ? "%" : ""),
 						data : vals[i],
 						borderWidth: 2,
-						borderDash: [5, ((is_relativeValues) ? 5 : 0)],
+						//borderDash: [5, ((is_relativeValues) ? 5 : 0)],
 		            	// borderColor: generateRandomColor(),
 		            	borderColor: getColorFromTable(),
 		            	fill: false,
@@ -624,7 +624,7 @@ function getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
 		        // endValue: chartDataRepresentation.maxYValue,
 		        borderColor: 'rgba(0, 100, 0, 0.8)', // a line without visibility
 		        borderWidth: 2,
-		        borderDash: [20, 10],
+		        //borderDash: [20, 10],
 		        label: {
 		            position: 'top',
 		            yAdjust: (i % 2 ? 20: 0),
@@ -703,7 +703,7 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 				},
 				elements: {
                     point: {
-                        pointStyle: 'dash',
+                        pointStyle: 'line',
                     }
                 },
                 title: {
