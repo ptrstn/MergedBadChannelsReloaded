@@ -6,7 +6,7 @@ $(document).ready(function() {
 	var dateFormat = "dd/mm/yyyy";
 
 	// RUN SLIDER - FIRST PASS - CREATE BASIC SLIDER
-	var initialSliderValues = [300000, 305000];
+	var initialSliderValues = [322203, 322403];
 	var minSliderVal = 261370;
 	var maxSliderVal = 399999;//data + 3000;
 	var ticks = [];
@@ -100,9 +100,9 @@ $(document).ready(function() {
 
 	})
 	$('#linLogToggle').change(function(){
-		changeAxisType($(this).parent().hasClass('off'),
-					   !$("#absoluteRelativeValues").parent().hasClass("off")
-					   );
+		var y_min = getMinY();
+		var y_max = getMaxY();
+		changeAxisType($(this).parent().hasClass('off'), !$("#absoluteRelativeValues").parent().hasClass("off"), y_min, y_max);
 	});
 
 	$("#allInMonthSwitch").change(function(){
@@ -254,6 +254,48 @@ $(document).ready(function() {
 	$("#resetViewBtn").on('click', function(){
 		$("#hideSuperimposedData").bootstrapToggle('off');
 		thisChart.resetZoom();
+	});
+	
+	/**
+	 * returns the mininum value for the y axis for custom scaling
+	 */
+	function getMinY(){
+		return $("#id-min-y").val();
+	}
+
+	/**
+	 * returns the maximum value for the y axis for custom scaling
+	 */
+	function getMaxY(){
+		return $("#id-max-y").val();
+	}
+	
+	/**
+	 * checks if "absolute" or "relative" is checked in the user control panel
+	 */
+	function is_absolute(){
+		return $("#absoluteRelativeValues").parent().hasClass("off"); 
+	}
+
+	function is_relative(){
+		return !is_absolute();
+	}
+	
+	/**
+	 * checks if "Lin" or "Log" is checked in the user control panel
+	 */
+	function is_linear_scale(){
+		return $('#linLogToggle').parent().hasClass("off"); 
+	}		    
+
+	function is_logarithmic_scale(){
+		return !is_linear_scale();
+	}		    
+
+	$('#id-button-rescale-y-axis').on('click', function(){
+		var y_min = getMinY();
+		var y_max = getMaxY();
+		changeAxisType(is_linear_scale(), is_relative(), y_min, y_max);
 	});
 
 	$("#careAboutRunLength, #superimposeData, #absoluteRelativeValues").on('change', function()
@@ -549,8 +591,9 @@ $(document).ready(function() {
 										   }, function(data){
 												$("#plotImages").css("background-image", "");
 												console.log(data);
-												
-												thisChart = CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_linear);
+												var y_min = getMinY();
+												var y_max = getMaxY();
+												thisChart = CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_linear, y_min, y_max);
 
 												$("#plotContainer").css("display", "block");
 

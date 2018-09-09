@@ -466,7 +466,11 @@
 	<button class="btn btn-default btn-sm" id="resetViewBtn" data-toggle="tooltip" data-placement="auto bottom" title="Resets the canvas. Makes data fit into the view."><span class="glyphicon glyphicon-refresh"></span> Reset View</button>
 	<button class="btn btn-default btn-sm" id="plotSaveBtn" data-toggle="tooltip" data-placement="auto bottom" title="Save current plot view as a png image."><span class="glyphicon glyphicon-floppy-disk"></span> Save Plot</button>
 </div>
-
+<div class="form-inline">
+<input class="form-control" type="text" id="id-min-y" value="" placeholder="Minimum y-axis value">
+<input class="form-control" type="text" id="id-max-y" value="" placeholder="Maximum y-axis value">
+<button class="btn btn-default btn-sm" id="id-button-rescale-y-axis">Rescale Bad Components Axis</button>
+</div>
 <div class="container" id="plotContainer" style="display: none">
 	<canvas id="thePlot"></canvas>
 </div>

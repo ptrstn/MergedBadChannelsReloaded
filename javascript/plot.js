@@ -126,44 +126,62 @@ var totalSubModuleCnt = {
 
 }
 
-var linearScaleOptions = [{
-	id: 'y-axis-0',
-	display: true,
-	type: 'linear',
-	position: 'left',
-	scaleLabel: {
-        display: true,
-        labelString: 'Bad Components / Value',
-        fontSize : 24,
-    },
-	ticks:{
+
+function getScaleOptions(is_linear, is_relativeValues, y_min, y_max){
+	var logarithmicScaleOptions = [{
+	    id: 'y-axis-0',
+	    display: true,
+	    type: 'logarithmic',
+	    position: 'left',
+	    scaleLabel: {
+		display: true,
+		labelString: 'Bad Components / Value',
+		fontSize : 24,
+	    },
+	    ticks:{
 		suggestedMin: 0,
-    	// min: 0,
-	}
-}];
+		//min: 3,
+		//max: 13,
+	    }
+	}];
 
-var logarithmicScaleOptions = [{
-    id: 'y-axis-0',
-    display: true,
-    type: 'logarithmic',
-    position: 'left',
-    scaleLabel: {
-        display: true,
-        labelString: 'Bad Components / Value',
-        fontSize : 24,
-    },
-    ticks:{
-    	suggestedMin: 0,
-    	// min: 0,
-    }
-}];
-
-function getScaleOptions(is_linear, is_relativeValues){
+	var linearScaleOptions = [{
+		id: 'y-axis-0',
+		display: true,
+		type: 'linear',
+		position: 'left',
+		scaleLabel: {
+		display: true,
+		labelString: 'Bad Components / Value',
+		fontSize : 24,
+	    },
+		ticks:{
+			suggestedMin: 0,
+			//min: 2,
+			//max: 13,
+		}
+	}];
 
 	var scale = is_linear ? linearScaleOptions : logarithmicScaleOptions;
 	// console.log(is_relativeValues);
 	scale[0].scaleLabel.labelString = is_relativeValues ? 'Bad Components / Value [%]' : 'Bad Components / Value';
+	//console.log("!!! getScaleOptions called " + scale[0].ticks.min + " " + scale[0].ticks.max + " " + scale[0].ticks.suggestedMin + " " + scale[0].ticks.suggestedMax + "!!!")
+	/*if(y_min != null && y_min !== "" && !isNan(y_min) && y_max != null && y_max !== "" && !isNan(y_max)){
+		scale[0].ticks = {
+			min: y_min,
+     			max: y_max,
+		};
+	}*/
+	if(!isNaN(y_min) && y_min !== ""){
+		scale[0].ticks.suggestedMin = Number(y_min)
+		scale[0].ticks.min = Number(y_min)
+	}
 
+	if(!isNaN(y_max) && y_max !== ""){
+		scale[0].ticks.suggestedMax = Number(y_max)
+		scale[0].ticks.max = Number(y_max)
+	}
+	//console.log("!!! getScaleOptions called " + scale[0].ticks.min + " " + scale[0].ticks.max + " " + scale[0].ticks.suggestedMin + " " + scale[0].ticks.suggestedMax + "!!!")
 	return scale;
 }
 
@@ -171,9 +189,9 @@ function intToStrWithLeadingZeros(num, size=5){
 	return ('00000' + num).substr(-size); 
 }
 
-function changeAxisType(is_linear, is_relativeValues)
+function changeAxisType(is_linear, is_relativeValues, y_min, y_max)
 {
-	thisChart.options.scales.yAxes = Chart.helpers.scaleMerge(Chart.defaults.scale, {yAxes: getScaleOptions(is_linear, is_relativeValues)}).yAxes;
+	thisChart.options.scales.yAxes = Chart.helpers.scaleMerge(Chart.defaults.scale, {yAxes: getScaleOptions(is_linear, is_relativeValues, y_min, y_max)}).yAxes;
 
 	Object.keys(thisChart.scales).forEach(function (axisName) {
         var scale = thisChart.scales[axisName];
@@ -641,7 +659,7 @@ function getAnnotations(maxYValue, minYValue, is_runByRunOn, binsNum,
 	return annotations;
 }
 
-function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_linear)
+function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_linear, y_min, y_max)
 {
 	chartDataRepresentation = (getChartDataRepresentation(data, is_runByRunOn, is_superimpose, is_relativeValues, null))
 
@@ -806,7 +824,7 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 				display: false,
                         },
                     }],
-                    yAxes: getScaleOptions(is_linear, is_relativeValues),
+                    yAxes: getScaleOptions(is_linear, is_relativeValues, y_min, y_max),
                 },
 
                 // ANNOTATIONS
@@ -902,7 +920,7 @@ function CreatePlot(data, is_runByRunOn, is_superimpose, is_relativeValues, is_l
 		thisChart.resetZoom();
 		thisChart.update();	
 
-		changeAxisType(is_linear, is_relativeValues);
+		changeAxisType(is_linear, is_relativeValues, y_min, y_max);
 	}
 	console.log(thisChart);
 
